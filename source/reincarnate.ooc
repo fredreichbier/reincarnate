@@ -1,17 +1,9 @@
-import structs/ArrayList
+import structs/[ArrayList,HashMap]
 
-import reincarnate/Nirvana
+import io/FileReader
+import reincarnate/Usefile
 
 main: func {
-    nirvana := Nirvana new("http://nirvana.ooc-lang.org/api%s", "http://nirvana.ooc-lang.org%s")
-    for(category: String in nirvana getCategories()) {
-        "Category: %s" format(category) println()
-        for(package: String in nirvana getPackages(category)) {
-            " * %s" format(package) println()
-            for(ver: String in nirvana getVersions(package)) {
-                usefile := nirvana getUsefilePath(package, ver)
-                "  - %s (%s)" format(ver, usefile) println()
-            }
-        }
-    }
+    usefile := Usefile new(FileReader new("yajl.use")) as HashMap<String>
+    usefile get("Libs") println()
 }

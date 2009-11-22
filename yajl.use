@@ -1,0 +1,8 @@
+Name: YAJL
+Description: Yet Another JSON Library 
+
+
+# Comment!
+Libs: -lyajl
+Includes: yajl/yajl_parse.h
+SourcePath: .
