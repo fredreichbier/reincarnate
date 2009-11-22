@@ -1,5 +1,5 @@
 OOC=ooc
-OOC_FLAGS=-sourcepath=source/ -noclean
+OOC_FLAGS=-sourcepath=source/ -noclean -v
 
 all: reincarnate
 
