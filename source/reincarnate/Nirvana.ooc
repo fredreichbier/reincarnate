@@ -12,12 +12,12 @@ APIException: class extends Exception {
 }
 
 Nirvana: class {
-    urlTemplate: String
+    usefileTemplate, apiTemplate: String
 
-    init: func (=urlTemplate) {}
+    init: func (=apiTemplate, =usefileTemplate) {}
 
     _getUrl: func (path: String) -> String {
-        urlTemplate format(path)
+        apiTemplate format(path)
     }
 
     _downloadUrl: func (path: String) -> String {
@@ -47,4 +47,17 @@ Nirvana: class {
         map := _interpreteUrl("/category/%s/" format(category))
         return map keys
     }
-}
+
+    getVersions: func (package: String) -> ArrayList<String> {
+        map := _interpreteUrl("/packages/%s/" format(package))
+        return map keys
+    }
+
+    getUsefilePath: func (package: String, ver: String) -> String {
+        map := _interpreteUrl("/packages/%s/%s/" format(package, ver))
+        return map get("usefile", String)
+    }
+
+    getUsefile: func (package: String, ver: String) -> String {
+        return _downloadUrl(usefileTemplate format(getUsefilePath(package, ver)))
+    }
