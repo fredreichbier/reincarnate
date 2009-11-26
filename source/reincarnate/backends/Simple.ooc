@@ -5,6 +5,7 @@ SimpleBackend: class extends Backend {
         remoteLocation := usefile get("DownloadUrl") /* TODO: check! */
         localDestination := Net downloadPackage(remoteLocation)
         "%s is now at %s!" format(remoteLocation, localDestination) println()
+        app fileSystem extractToLibdir(localDestination)
     }
 
     removePackage: func (usefile: Usefile) {}

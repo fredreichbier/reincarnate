@@ -1,4 +1,5 @@
 import structs/[ArrayList,HashMap]
+import os/Env
 import io/FileReader
 
 import reincarnate/[Config, Backend, Usefile, Nirvana, Net, FileSystem]
@@ -14,7 +15,11 @@ App: class {
 //        config = Config new("reincarnate.json")
         backend = SimpleBackend new()
 //        nirvana = ...
-        fileSystem = FileSystem new("/tmp", "/var/tmp") /* TODO: nicer baseDir ;) */
+        oocLibs := Env get("OOC_LIBS")
+        if(!oocLibs) {
+            oocLibs = "/var/lib/ooc" /* TODO */
+        }
+        fileSystem = FileSystem new("/tmp", "/var/tmp", oocLibs) /* TODO: nicer baseDir ;) */
     }
 
     installUsefile: func (location: String) {
