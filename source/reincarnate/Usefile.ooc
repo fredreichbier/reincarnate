@@ -24,7 +24,7 @@ Usefile: class extends HashMap<String> {
     _splitLine: func (line: String, key, value: String*) {
         idx := line indexOf(':')
         if(idx == -1) {
-            ParseError new(This, "Invalid line: %s" format(line)) throw()
+            ParseError new(This, "Invalid line: '%s'" format(line)) throw()
         }
         key@ = line substring(0, idx) trim()
         value@ = line substring(idx + 1, line length()) trim() trim('\n') /* TODO: Mr Memory is sad. */

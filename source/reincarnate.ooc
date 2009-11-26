@@ -1,9 +1,6 @@
-import structs/[ArrayList,HashMap]
-
-import io/FileReader
-import reincarnate/Usefile
+import reincarnate/App
 
 main: func {
-    usefile := Usefile new(FileReader new("yajl.use")) as HashMap<String>
-    usefile get("Libs") println()
+    app = App new()
+    app installUsefile("file://yajl.use")
 }
