@@ -1,6 +1,6 @@
 Name: YAJL
 Description: Yet Another JSON Library 
-DownloadUrl: file:///home/fred/dev/ooc/ooc-yajl/ooc-yajl-head.tar.gz
+DownloadUrl: file://ooc-yajl-head.tar.gz
 
 # Comment!
 Libs: -lyajl

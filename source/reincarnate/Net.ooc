@@ -63,7 +63,11 @@ Net: cover {
         if(!errorCode success()) {
             NetError new(This, "Error parsing URI '%s': %d" format(url, errorCode)) throw()
         }
-        return uri@ pathTail@ text copy()
+        if(uri@ pathTail) {
+           return uri@ pathTail@ text copy()
+        } else {
+            return uri@ hostText copy()
+        }
     }
 
     downloadPackage: static func (url: String) -> String {
