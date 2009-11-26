@@ -2,5 +2,5 @@ import reincarnate/App
 
 main: func {
     app = App new()
-    app installUsefile("file://yajl.use")
+    app installLatestVersion("ooc-yajl")
 }

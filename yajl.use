@@ -1,8 +1,0 @@
-Name: YAJL
-Description: Yet Another JSON Library 
-DownloadUrl: file://ooc-yajl-head.tar.gz
-
-# Comment!
-Libs: -lyajl
-Includes: yajl/yajl_parse.h
-SourcePath: .

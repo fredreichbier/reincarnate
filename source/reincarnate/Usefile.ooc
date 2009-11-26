@@ -27,11 +27,12 @@ Usefile: class extends HashMap<String> {
             ParseError new(This, "Invalid line: '%s'" format(line)) throw()
         }
         key@ = line substring(0, idx) trim()
-        value@ = line substring(idx + 1, line length()) trim() trim('\n') /* TODO: Mr Memory is sad. */
+        value@ = line substring(idx + 1, line length()) trim() trim('\n') trim('\r') /* TODO: Mr Memory is sad. */
     }
 
     readUsefile: func ~fromString (str: String) {
         key, value: String
+        str println()
         for(line: String in str split('\n')) {
             if(line length() > 0 && !line startsWith("#")) { /* ignore empty lines and comments */
                 _splitLine(line, key&, value&)

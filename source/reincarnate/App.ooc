@@ -14,7 +14,7 @@ App: class {
     init: func {
 //        config = Config new("reincarnate.json")
         backend = SimpleBackend new()
-//        nirvana = ...
+        nirvana = Nirvana new("http://nirvana.ooc-lang.org/api%s", "http://nirvana.ooc-lang.org%s")
         oocLibs := Env get("OOC_LIBS")
         if(!oocLibs) {
             oocLibs = "/var/lib/ooc" /* TODO */
@@ -25,6 +25,10 @@ App: class {
     installUsefile: func (location: String) {
         usefile := Usefile new(Net downloadString(Net resolveLocation(location)))
         backend installPackage(usefile)
+    }
+
+    installLatestVersion: func (package: String) {
+        backend installPackage(Usefile new(nirvana getLatestUsefile(package)))
     }
 }
 

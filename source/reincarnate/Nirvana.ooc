@@ -59,5 +59,10 @@ Nirvana: class {
     }
 
     getUsefile: func (package: String, ver: String) -> String {
-        return _downloadUrl(usefileTemplate format(getUsefilePath(package, ver)))
+        return Net downloadString(usefileTemplate format(getUsefilePath(package, ver)))
     }
+
+    getLatestUsefile: func (package: String) -> String {
+        getUsefile(package, "latest")
+    }
+}
