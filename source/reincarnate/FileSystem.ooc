@@ -30,27 +30,60 @@ FileSystem: class {
         after@ = name substring(idx, name length())
         return true
     }
-
-    getPackageFilename: func (name: String) -> String {
+    
+    findFreeName: static func (dir: File, name: String) -> String {
         baseName, ext: String
         if(!splitExt(name, baseName&, ext&)) {
             baseName = name
             ext = ""
         }
-        while(packageDir getChild(baseName + ext) exists()) {
+        while(dir getChild(baseName + ext) exists()) {
             baseName = baseName + '_'
         }
-        return packageDir getChild(baseName + ext) path
+        return dir getChild(baseName + ext) path
+    }
+
+    getPackageFilename: func (name: String) -> String {
+        return findFreeName(packageDir, name)
+    }
+
+    getPackageDirectory: func (name: String) -> String {
+        baseName, ext: String
+        if(!splitExt(name, baseName&, ext&)) {
+            baseName = name
+        }
+        return findFreeName(packageDir, baseName)
     }
 
     extract: static func (filename, destination: String) {
+        {
+            dir := File new(destination)
+            if(!dir exists()) {
+                dir mkdir()
+            }
+        }
         args := ["tar", "-xvf", filename, "-C", destination] as ArrayList<String>
         process := SubProcess new(args)
         ret := process execute()
         "RET: %d" format(ret) println()
     }
 
-    extractToLibdir: func (filename: String) {
-        extract(filename, libDir path)
+    copy: static func (src, dst: String) {
+        process := SubProcess new(["cp", "-r", src, dst] as ArrayList<String>)
+        process execute()
+    }
+
+    copyToLibdir: func (src: String) {
+        copy(src, libDir path)
+    }
+
+    copyContents: static func (src, dst: String) {
+        for(file: File in File new(src) getChildren()) {
+            copy(file path, dst)
+        }
+    }
+
+    copyContentsToLibdir: func (src: String) {
+        copyContents(src, libDir path)
     }
 }

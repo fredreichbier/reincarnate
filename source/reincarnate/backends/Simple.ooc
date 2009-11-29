@@ -1,11 +1,9 @@
-import reincarnate/[Backend, Usefile, App, Net]
+import reincarnate/[Backend, Usefile, App, Net, FileSystem]
 
 SimpleBackend: class extends Backend {
     installPackage: func (usefile: Usefile) {
-        remoteLocation := usefile get("DownloadUrl") /* TODO: check! */
-        localDestination := Net downloadPackage(remoteLocation)
-        "%s is now at %s!" format(remoteLocation, localDestination) println()
-        app fileSystem extractToLibdir(localDestination)
+        destination := app downloadPackage(usefile)
+        app fileSystem copyContentsToLibdir(destination) /* TODO. */
     }
 
     removePackage: func (usefile: Usefile) {}

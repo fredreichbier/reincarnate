@@ -55,7 +55,7 @@ Net: cover {
         fw close()
     }
 
-    _getBaseName: static func (url: String) -> String {
+    _parseUri: static func (url: String) -> Uri {
         state := ParserState new()
         uri := Uri new()
         state@ uri = uri
@@ -63,11 +63,21 @@ Net: cover {
         if(!errorCode success()) {
             NetError new(This, "Error parsing URI '%s': %d" format(url, errorCode)) throw()
         }
+        return uri    
+    }
+
+    _getBaseName: static func (url: String) -> String {
+        uri := _parseUri(url)
         if(uri@ pathTail) {
            return uri@ pathTail@ text copy()
         } else {
             return uri@ hostText copy()
         }
+    }
+
+    getScheme: static func (url: String) -> String {
+        uri := _parseUri(url)
+        return uri@ scheme copy()
     }
 
     downloadPackage: static func (url: String) -> String {
