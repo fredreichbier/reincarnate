@@ -115,4 +115,28 @@ App: class {
         /* not found :( */
         Exception new(This, "Couldn't find the package '%s'. Sure it's installed?" format(name)) throw()   
     }
+
+    /** update the package described by `name`: get the usefile, do stage 2 and call `update` */
+    /* TODO: do it cooler. */
+    update: func (name: String) {
+        /* look for the usefile in the subdir of the oocLibs directory. */
+        logger info("Updating package '%s'" format(name))
+        usefileName := "%s.use" format(name)
+        oocLibs := File new(config get("Paths.oocLibs", String))
+        for(child: File in oocLibs getChildren()) {
+            if(child getChild(usefileName) exists()) {
+                /* ffffound! */
+                reader := FileReader new(child getChild(usefileName) path)
+                usefile := Usefile new(reader)
+                usefile put("_Slug", name)
+                reader close()
+                package := doStage2(usefile)
+                package update(child)
+                return
+            }
+        }
+        /* not found :( */
+        Exception new(This, "Couldn't find the package '%s'. Sure it's installed?" format(name)) throw()   
+    }
 }
+
