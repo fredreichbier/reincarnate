@@ -29,7 +29,7 @@ Usefile: class extends HashMap<String> {
             UsefileParseError new(This, "Invalid line: '%s'" format(line)) throw()
         }
         key@ = line substring(0, idx) trim()
-        value@ = line substring(idx + 1, line length()) trim() trim('\n') trim('\r') /* TODO: Mr Memory is sad. */
+        value@ = line substring(idx + 1, line length()) trim('\n') trim('\r') trim() /* TODO: Mr Memory is sad. */
     }
  
     readUsefile: func ~fromString (str: String) {

@@ -1,6 +1,0 @@
-Name: YAJL
-Description: Yet Another JSON Library 
-Libs: -lyajl
-Origin: file:///tmp/yajl-0.2.tar.gz
-Includes: yajl/yajl_parse.h
-SourcePath: .

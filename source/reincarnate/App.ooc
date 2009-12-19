@@ -7,7 +7,7 @@ import deadlogger/[Log, Handler, Formatter]
 
 import reincarnate/[Config, FileSystem, Net, Nirvana, Usefile, Package, Version]
 import reincarnate/stage1/[Stage1, Local, Nirvana, URL]
-import reincarnate/stage2/[Stage2, Archive]
+import reincarnate/stage2/[Stage2, Archive, Git]
 
 _setupLogger: func {
     console := StdoutHandler new()
@@ -42,6 +42,7 @@ App: class {
         addStage1("url", URLS1 new(this))
         /* stage 2 */
         addStage2("archive", ArchiveS2 new(this))
+        addStage2("git", GitS2 new(this))
     }
 
     addStage1: func (nickname: String, stage: Stage1) {
@@ -82,6 +83,10 @@ App: class {
         }
         scheme := Net getScheme(origin)
         nickname := "archive"
+        if(scheme == "git") {
+            /* git repo! */
+            nickname = "git"
+        }
         logger debug("Doing stage 2 nickname '%s' on '%s'." format(nickname, usefile get("_Slug")))
         stages2[nickname] getPackage(usefile)
     }
@@ -92,6 +97,7 @@ App: class {
         usefile := doStage1(location)
         package := doStage2(usefile)
         package install()
+        logger info("Installation of '%s' done." format(location))
     }
 
     /** remove the package described by `name`: get the usefile, stage 2 and ready. */
@@ -109,6 +115,7 @@ App: class {
                 reader close()
                 package := doStage2(usefile)
                 package remove(child)
+                logger info("Removal of '%s' done." format(name))
                 return
             }
         }
@@ -132,6 +139,7 @@ App: class {
                 reader close()
                 package := doStage2(usefile)
                 package update(child)
+                logger info("Update of '%s' done." format(name))
                 return
             }
         }
