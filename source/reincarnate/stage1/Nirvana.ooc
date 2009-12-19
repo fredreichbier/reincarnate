@@ -10,6 +10,8 @@ NirvanaS1: class extends Stage1 {
         if(ver == null) {
             ver = "latest"
         }
-        Usefile new(app nirvana getUsefile(location, ver))
+        usefile := Usefile new(app nirvana getUsefile(location, ver))
+        usefile put("_Slug", location)
+        return usefile
     }
 }

@@ -29,6 +29,16 @@ Config: class {
         defaults := FixedEntity new(null)
         defaults addValue("Nirvana.APITemplate", "http://nirvana.ooc-lang.org/api%s") \
                 .addValue("Nirvana.UsefileTemplate", "http://nirvana.ooc-lang.org%s")
+        if(Env get("OOC_LIBS")) {
+            defaults addValue("Paths.oocLibs", Env get("OOC_LIBS"))
+        } else {
+            version(linux) {
+                defaults addValue("Paths.oocLibs", "/usr/lib/ooc")
+            }
+        }
+        version(linux) {
+            defaults addValue("Paths.Yard", "/var/tmp/ooc")
+        }
         top := defaults
         /* system-wide configuration? */
         if(File new(systemFileName()) exists()) {

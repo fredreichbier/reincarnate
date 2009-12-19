@@ -50,7 +50,7 @@ Net: class {
         fw close()
     }
  
-    _getBaseName: static func (url: String) -> String {
+    getBaseName: static func (url: String) -> String {
         state := ParserState new()
         uri := Uri new()
         state@ uri = uri
@@ -63,6 +63,17 @@ Net: class {
         } else {
             return uri@ hostText copy()
         }
+    }
+
+    getScheme: static func (url: String) -> String {
+        state := ParserState new()
+        uri := Uri new()
+        state@ uri = uri
+        errorCode := state parse(url)
+        if(!errorCode success()) {
+            NetError new(This, "Error parsing URI '%s': %d" format(url, errorCode)) throw()
+        }
+        return uri@ scheme copy()
     }
 
     app: App

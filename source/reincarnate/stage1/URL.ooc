@@ -1,4 +1,4 @@
-import reincarnate/[App, Net, Usefile]
+import reincarnate/[App, FileSystem, Net, Usefile]
 import reincarnate/stage1/Stage1
 
 URLS1: class extends Stage1 {
@@ -8,6 +8,10 @@ URLS1: class extends Stage1 {
 
     getUsefile: func (location, ver: String) -> Usefile {
         /* TODO: version check */
-        Usefile new(Net downloadString(location))
+        usefile := Usefile new(Net downloadString(location))
+        slug := Net getBaseName(location)
+        FileSystem splitExt(slug, slug&, null)
+        usefile put("_Slug", slug)
+        return usefile
     }
 }
