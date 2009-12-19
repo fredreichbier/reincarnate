@@ -1,5 +1,6 @@
 use deadlogger
 
+import io/[File, FileReader]
 import structs/HashMap
 
 import deadlogger/[Log, Handler, Formatter]
@@ -68,7 +69,7 @@ App: class {
             /* local stage 1 */
             nickname = "local"
         }
-        logger info("Doing stage 1 nickname '%s' on '%s', version '%s'." format(nickname, location, ver))
+        logger debug("Doing stage 1 nickname '%s' on '%s', version '%s'." format(nickname, location, ver))
         stages1[nickname] getUsefile(location, ver)
     }
 
@@ -81,14 +82,37 @@ App: class {
         }
         scheme := Net getScheme(origin)
         nickname := "archive"
-        logger info("Doing stage 2 nickname '%s' on '%s'." format(nickname, usefile get("_Slug")))
+        logger debug("Doing stage 2 nickname '%s' on '%s'." format(nickname, usefile get("_Slug")))
         stages2[nickname] getPackage(usefile)
     }
 
     /** install the package described by `location`: do stage 1, do stage 2, install. */
     install: func (location: String) {
+        logger info("Installing package '%s'" format(location))
         usefile := doStage1(location)
         package := doStage2(usefile)
         package install()
+    }
+
+    /** remove the package described by `name`: get the usefile, stage 2 and ready. */
+    remove: func (name: String) {
+        /* look for the usefile in the subdir of the oocLibs directory. */
+        logger info("Removing package '%s'" format(name))
+        usefileName := "%s.use" format(name)
+        oocLibs := File new(config get("Paths.oocLibs", String))
+        for(child: File in oocLibs getChildren()) {
+            if(child getChild(usefileName) exists()) {
+                /* ffffound! */
+                reader := FileReader new(child getChild(usefileName) path)
+                usefile := Usefile new(reader)
+                usefile put("_Slug", name)
+                reader close()
+                package := doStage2(usefile)
+                package remove(child)
+                return
+            }
+        }
+        /* not found :( */
+        Exception new(This, "Couldn't find the package '%s'. Sure it's installed?" format(name)) throw()   
     }
 }

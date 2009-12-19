@@ -92,5 +92,9 @@ FileSystem: class {
         }
         return File new(destination) getChild(dir) path
     }
+
+    remove: func (path: File) {
+        Process new(["rm", "-rf", path path] as ArrayList<String>) execute()
+    }
 }
  

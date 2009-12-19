@@ -11,7 +11,7 @@ ArchivePackage: class extends Package {
     init: func ~usefile (=app, =usefile) {}
 
     install: func (oocLibsDir: File) {
-        logger info("Installing '%s' to '%s'" format(usefile get("_Slug"), oocLibsDir path))
+        logger debug("Installing '%s' to '%s'" format(usefile get("_Slug"), oocLibsDir path))
         /* first, download the archive to the yard. */
         url := usefile get("Origin")
         fname := app fileSystem getPackageFilename(app net getBaseName(url))
@@ -21,8 +21,17 @@ ArchivePackage: class extends Package {
         packageDir := app fileSystem extractPackage(fname, oocLibsDir path)
         /* we're done :) */
     }
-
+    
+    /** we take it easy: updating is removing plus reinstallation */
     update: func (libDir: File) {
+        dir := libDir parent()
+        remove()
+        install(dir)
+    }
+
+    /** just - remove - the - folder. :( */
+    remove: func (libDir: File) {
+        app fileSystem remove(libDir)
     }
 }
 
