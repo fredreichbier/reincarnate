@@ -24,8 +24,8 @@ Package: abstract class {
         return null
     }
 
-    install: abstract func (oocLibsDir: File)
-    install: func ~fromConfig {
+    install: abstract func (oocLibsDir: File) -> File
+    install: func ~fromConfig -> File {
         install(File new(app config get("Paths.oocLibs", String)))
     }
 

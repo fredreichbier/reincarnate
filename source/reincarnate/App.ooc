@@ -94,9 +94,13 @@ App: class {
         stages2[nickname] getPackage(usefile)
     }
 
-    _getYardPath: func (usefile: Usefile) -> File {
+    _getYardPath: func ~usefile (usefile: Usefile) -> File {
+        return _getYardPath(usefile get("_Slug"))
+    }
+
+    _getYardPath: func ~slug (slug: String) -> File {
         yard := config get("Paths.Yard", File)
-        yard getChild("%s.use" format(usefile get("_Slug")))
+        return yard getChild("%s.use" format(slug))
     }
 
     /** store this usefile in the yaaaaaaaaaard. */
@@ -106,6 +110,14 @@ App: class {
         writer := FileWriter new(path)
         writer write(usefile dump())
         writer close()
+    }
+
+    /* get the usefile from the yard. */
+    getUsefile: func (slug: String) -> Usefile {
+        reader := FileReader new(_getYardPath(slug))
+        usefile := Usefile new(reader)
+        reader close()
+        usefile
     }
 
     /** remove the usefile from the yard. */
@@ -123,33 +135,22 @@ App: class {
         logger info("Installing package '%s'" format(location))
         usefile := doStage1(location)
         package := doStage2(usefile)
-        package install()
+        libDir := package install()
+        usefile put("_LibDir", libDir getAbsolutePath())
         dumpUsefile(usefile)
         logger info("Installation of '%s' done." format(location))
     }
 
-    /** remove the package described by `name`: get the usefile, stage 2 and ready. */
+    /** remove the package described by `name`: get the usefile from the yard, stage 2 and ready. */
     remove: func (name: String) {
         /* look for the usefile in the subdir of the oocLibs directory. */
         logger info("Removing package '%s'" format(name))
-        usefileName := "%s.use" format(name)
-        oocLibs := File new(config get("Paths.oocLibs", String))
-        for(child: File in oocLibs getChildren()) {
-            if(child getChild(usefileName) exists()) {
-                /* ffffound! */
-                reader := FileReader new(child getChild(usefileName) path)
-                usefile := Usefile new(reader)
-                usefile put("_Slug", name)
-                reader close()
-                package := doStage2(usefile)
-                package remove(child)
-                removeUsefile(usefile)
-                logger info("Removal of '%s' done." format(name))
-                return
-            }
-        }
-        /* not found :( */
-        Exception new(This, "Couldn't find the package '%s'. Sure it's installed?" format(name)) throw()   
+        usefile := getUsefile(name)
+        package := doStage2(usefile)
+        libDir := File new(usefile get("_LibDir"))
+        package remove(libDir)
+        removeUsefile(usefile)
+        logger info("Removal of '%s' done." format(name))
     }
 
     /** update the package described by `name`: get the usefile, do stage 2 and call `update` */
@@ -157,23 +158,17 @@ App: class {
     update: func (name: String) {
         /* look for the usefile in the subdir of the oocLibs directory. */
         logger info("Updating package '%s'" format(name))
-        usefileName := "%s.use" format(name)
-        oocLibs := File new(config get("Paths.oocLibs", String))
-        for(child: File in oocLibs getChildren()) {
-            if(child getChild(usefileName) exists()) {
-                /* ffffound! */
-                reader := FileReader new(child getChild(usefileName) path)
-                usefile := Usefile new(reader)
-                usefile put("_Slug", name)
-                reader close()
-                package := doStage2(usefile)
-                package update(child)
-                logger info("Update of '%s' done." format(name))
-                return
-            }
+        usefile := getUsefile(name)
+        stage1 := stages1[usefile get("_Stage1")]
+        hasUpdates := stage1 hasUpdates(usefile get("_Location"), usefile) /* stupid workaround. TODO. */
+        if(hasUpdates) {
+            /* has updates! update me, baby! */
+            stage2 := doStage2(usefile)
+            libDir := File new(usefile get("_LibDir"))
+            stage2 update(libDir)
+        } else {
+            logger info("Couldn't find updates for '%s'" format(name))
         }
-        /* not found :( */
-        Exception new(This, "Couldn't find the package '%s'. Sure it's installed?" format(name)) throw()   
     }
 }
 

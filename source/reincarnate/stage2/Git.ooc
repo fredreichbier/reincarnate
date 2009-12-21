@@ -12,7 +12,7 @@ logger := Log getLogger("reincarnate.stage2.Git")
 GitPackage: class extends Package {
     init: func ~usefile (=app, =usefile) {}
 
-    install: func (oocLibsDir: File) {
+    install: func (oocLibsDir: File) -> File {
         logger debug("Installing '%s' to '%s'" format(usefile get("_Slug"), oocLibsDir path))
         /* so, `Origin` is the address of the git repository. `git clone` it to `oocLibsDir path / _Slug`. */
         /* TODO: check if we're overwriting something. */
@@ -22,6 +22,7 @@ GitPackage: class extends Package {
         }
         Process new(["git", "clone", usefile get("Origin"), dest path] as ArrayList<String>) execute()
         /* done. */
+        dest
     }
     
     /** do `git pull`. */
