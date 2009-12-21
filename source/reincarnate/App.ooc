@@ -1,6 +1,6 @@
 use deadlogger
 
-import io/[File, FileReader]
+import io/[File, FileReader, FileWriter]
 import structs/HashMap
 
 import deadlogger/[Log, Handler, Formatter]
@@ -71,7 +71,9 @@ App: class {
             nickname = "local"
         }
         logger debug("Doing stage 1 nickname '%s' on '%s', version '%s'." format(nickname, location, ver))
-        stages1[nickname] getUsefile(location, ver)
+        usefile := stages1[nickname] getUsefile(location, ver)
+        usefile put("_Stage1", nickname) .put("_Location", location)
+        usefile
     }
 
     /** create a `Package` object using the usefile `usefile` somehow. */
@@ -88,15 +90,41 @@ App: class {
             nickname = "git"
         }
         logger debug("Doing stage 2 nickname '%s' on '%s'." format(nickname, usefile get("_Slug")))
+        usefile put("_Stage2", nickname)
         stages2[nickname] getPackage(usefile)
     }
 
+    _getYardPath: func (usefile: Usefile) -> File {
+        yard := config get("Paths.Yard", File)
+        yard getChild("%s.use" format(usefile get("_Slug")))
+    }
+
+    /** store this usefile in the yaaaaaaaaaard. */
+    dumpUsefile: func (usefile: Usefile) {
+        path := _getYardPath(usefile) path
+        logger debug("Storing usefile in the yard at '%s'." format(path))
+        writer := FileWriter new(path)
+        writer write(usefile dump())
+        writer close()
+    }
+
+    /** remove the usefile from the yard. */
+    removeUsefile: func (usefile: Usefile) {
+        path := _getYardPath(usefile)
+        if(path remove() == 0) {
+            logger debug("Removed usefile from the yard at '%s'." format(path path))
+        } else {
+            logger warn("Couldn't remove the usefile at '%s'." format(path path))
+        }
+    }
+    
     /** install the package described by `location`: do stage 1, do stage 2, install. */
     install: func (location: String) {
         logger info("Installing package '%s'" format(location))
         usefile := doStage1(location)
         package := doStage2(usefile)
         package install()
+        dumpUsefile(usefile)
         logger info("Installation of '%s' done." format(location))
     }
 
@@ -115,6 +143,7 @@ App: class {
                 reader close()
                 package := doStage2(usefile)
                 package remove(child)
+                removeUsefile(usefile)
                 logger info("Removal of '%s' done." format(name))
                 return
             }

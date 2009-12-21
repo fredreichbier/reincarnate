@@ -28,14 +28,14 @@ FileSystem: class {
             baseName = name
             ext = ""
         }
-        yard := File new(app config get("Paths.Yard", String))
+        temp := File new(app config get("Paths.Temp", String))
         baseBaseName := baseName
         i := 1
-        while(yard getChild(baseName + ext) exists()) {
+        while(temp getChild(baseName + ext) exists()) {
             baseName = "%s%d" format(baseBaseName, i)
             i += 1
         }
-        return yard getChild(baseName + ext) path
+        return temp getChild(baseName + ext) path
     }
 
     _executeWithOutput: func (args: ArrayList<String>, output: String*) -> Int {
