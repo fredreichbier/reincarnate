@@ -29,9 +29,6 @@ FileSystem: class {
             ext = ""
         }
         yard := File new(app config get("Paths.Yard", String))
-        if(!yard exists()) {
-            yard mkdir()
-        }
         baseBaseName := baseName
         i := 1
         while(yard getChild(baseName + ext) exists()) {

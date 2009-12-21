@@ -2,6 +2,7 @@ use gifnooc
 
 import io/File
 import os/Env
+import structs/ArrayList
 
 import gifnooc/Entity
 import gifnooc/entities/[INI, Fixed]
@@ -50,6 +51,19 @@ Config: class {
         }
         /* and set it. */
         entity = top
+        /* create directories. now. */
+        createDirectories()
+    }
+
+    /** create all directories mentioned in the configuration if they don't already exist. */
+    createDirectories: func {
+        file := null as File
+        paths := ["Paths.oocLibs", "Paths.Yard"] as ArrayList<String>
+        for(path: String in path) {
+            file = File new(path)
+            if(!file exists())
+                file mkdir()
+        }
     }
 
     get: func <T> (path: String, T: Class) -> T {
