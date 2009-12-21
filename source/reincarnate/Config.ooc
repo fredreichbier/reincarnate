@@ -59,8 +59,8 @@ Config: class {
     createDirectories: func {
         file := null as File
         paths := ["Paths.oocLibs", "Paths.Yard"] as ArrayList<String>
-        for(path: String in path) {
-            file = File new(path)
+        for(path: String in paths) {
+            file = File new(get(path, String))
             if(!file exists())
                 file mkdir()
         }
