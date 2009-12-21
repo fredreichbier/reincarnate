@@ -15,7 +15,7 @@ Stage1: abstract class {
         newUsefile := getUsefile(location, null)
         oldVersion := oldUsefile get("Version") as Version
         newVersion := newUsefile get("Version") as Version
-        /* (this also handles `vcs`.) */
+        /* (this also handles `head`.) */
         return newVersion isGreater(oldVersion)
     }
 }
