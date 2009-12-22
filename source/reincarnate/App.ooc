@@ -104,7 +104,15 @@ App: class {
     }
 
     _getYardPath: func ~latest (slug: String) -> File {
-        return _getYardPath(slug, getLatestInstalledVersion(slug)) 
+        ver := null as Version
+        if(slug contains('=')) {
+            /* slug contains a version! */
+            ver = Version fromLocation(slug)
+            slug = slug substring(0, slug indexOf('='))
+        }
+        if(ver == null)
+            ver = getLatestInstalledVersion(slug)
+        return _getYardPath(slug, ver)
     }
 
     getInstalledVersions: func (slug: String) -> ArrayList<Version> {
@@ -191,14 +199,18 @@ App: class {
         logger info("Removing package '%s'" format(name))
         usefile := getUsefile(name)
         package := doStage2(usefile)
-        if(usefile get("_Keep") != null) {
-            logger error("Version %s has the keepflag set. You must first unkeep it." format(usefile get("Version")))
+        remove(package)
+    }
+
+    remove: func ~package (package: Package) {
+        if(package usefile get("_Keep") != null) {
+            logger warn("Version %s has the keepflag set." format(package usefile get("Version")))
             return
         }
-        libDir := File new(usefile get("_LibDir"))
+        libDir := File new(package usefile get("_LibDir"))
         package remove(libDir)
-        removeUsefile(usefile)
-        logger info("Removal of '%s' done." format(name))
+        removeUsefile(package usefile)
+        logger info("Removal of '%s' done." format(package usefile get("_Slug")))
     }
 
     /** update the package described by `name`: get the usefile, do stage 2 and call `update` */
