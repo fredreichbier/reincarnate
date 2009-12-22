@@ -4,7 +4,7 @@ import yajl/Yajl
 
 import structs/ArrayList
  
-import reincarnate/[App, Net]
+import reincarnate/[App, Net, Version]
  
 APIException: class extends Exception {
     init: func ~withMsg (.msg) {
@@ -54,9 +54,9 @@ Nirvana: class {
         return map keys
     }
  
-    getVersions: func (package: String) -> ArrayList<String> {
+    getVersions: func (package: String) -> ArrayList<Version> {
         map := _interpreteUrl("/packages/%s/" format(package))
-        return map keys
+        return map keys as ArrayList<Version>
     }
  
     getUsefilePath: func (package: String, ver: String) -> String {

@@ -5,7 +5,7 @@ import structs/[ArrayList, HashMap]
 
 import deadlogger/[Log, Handler, Formatter]
 
-import reincarnate/[Config, FileSystem, Net, Nirvana, Usefile, Package, Version]
+import reincarnate/[Config, Dependencies, FileSystem, Net, Nirvana, Usefile, Package, Version]
 import reincarnate/stage1/[Stage1, Local, Nirvana, URL]
 import reincarnate/stage2/[Stage2, Archive, Git]
 
@@ -129,12 +129,33 @@ App: class {
     }
 
     getLatestInstalledVersion: func (slug: String) -> Version {
+        getLatestVersionOf(getInstalledVersions(slug))
+    }
+
+    getLatestVersionOf: static func (versions: ArrayList<Version>) -> Version {
         latest := null as Version
-        for(ver: Version in getInstalledVersions(slug)) {
+        for(ver: Version in versions) {
             if(latest == null || ver isGreater(latest))
                 latest = ver
         }
         return latest
+    }
+
+    /** find a version of `requirement slug` (in the "nirvana" stage1.) that 
+      * meets `requirement` and return the greatest. If there is none, return null. 
+      */
+    findVersion: func (requirement: Requirement) -> Version {
+        versions := nirvana getVersions(requirement slug)
+        meeting := ArrayList<Version> new()
+        if(versions != null) {
+            for(ver: Version in versions) {
+                if(requirement meets(ver)) {
+                    meeting add(ver)
+                }
+            }
+            return getLatestVersionOf(meeting)
+        }
+        return null
     }
 
     /** store this usefile in the yaaaaaaaaaard. */
@@ -187,10 +208,24 @@ App: class {
     }
 
     install: func ~package (package: Package) {
+        /* resolve dependencies. */
+        resolveDependencies(package)
         libDir := package install()
         package usefile put("_LibDir", libDir getAbsolutePath())
         dumpUsefile(package usefile)
         logger info("Installation of '%s' done." format(package usefile get("Name")))
+    }
+
+    resolveDependencies: func (package: Package) {
+        if(package usefile get("Requires") != null) {
+            /* has requirements. */
+            reqs := Requirements new(this)
+            reqs parseString(package usefile get("Requires"))
+            logger debug("Resolving dependencies ...")
+            for(loc: String in reqs getDependencyLocations()) {
+                this install(loc)
+            }
+        }
     }
 
     /** remove the package described by `name`: get the usefile from the yard, stage 2 and ready. */

@@ -1,4 +1,6 @@
-import reincarnate/[App, Nirvana, Usefile]
+import structs/ArrayList
+
+import reincarnate/[App, Nirvana, Usefile, Version]
 import reincarnate/stage1/Stage1
 
 NirvanaS1: class extends Stage1 {

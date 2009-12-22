@@ -1,6 +1,7 @@
 import io/[File, FileReader]
+import structs/ArrayList
 
-import reincarnate/[FileSystem, Usefile]
+import reincarnate/[FileSystem, Usefile, Version]
 import reincarnate/stage1/Stage1
 
 LocalS1: class extends Stage1 {

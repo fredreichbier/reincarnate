@@ -1,3 +1,5 @@
+import structs/ArrayList
+
 import reincarnate/[App, Usefile, Version]
 
 /** Stage1: getting the usefile. */

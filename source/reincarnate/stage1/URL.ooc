@@ -1,4 +1,6 @@
-import reincarnate/[App, FileSystem, Net, Usefile]
+import structs/ArrayList
+
+import reincarnate/[App, FileSystem, Net, Usefile, Version]
 import reincarnate/stage1/Stage1
 
 URLS1: class extends Stage1 {
