@@ -27,9 +27,12 @@ ArchivePackage: class extends Package {
     /** we take it easy: updating is removing plus reinstallation */
     update: func (libDir: File, usefile: Usefile) {
         dir := libDir parent()
-        remove(libDir)
-        /* remove the old usefile. */
-        app removeUsefile(this usefile)
+        if(this usefile get("_Keep") == null) {
+            /* only remove the old stuff if the user doesn't want to "keep" the old version. */
+            remove(libDir)
+            /* remove the old usefile. */
+            app removeUsefile(this usefile)
+        }
         app install(app doStage2(usefile))
     }
 

@@ -155,7 +155,21 @@ App: class {
             logger warn("Couldn't remove the usefile at '%s'." format(path path))
         }
     }
-    
+
+    keep: func (name: String) {
+        logger info("Keeping package '%s'" format(name))
+        usefile := getUsefile(name)
+        usefile put("_Keep", "yes")
+        dumpUsefile(usefile)
+    }
+
+    unkeep: func (name: String) {
+        logger info("Unkeeping package '%s'" format(name))
+        usefile := getUsefile(name)
+        usefile remove("_Keep")
+        dumpUsefile(usefile)
+    }
+       
     /** install the package described by `location`: do stage 1, do stage 2, install. */
     install: func ~usefile (location: String) {
         logger info("Installing package '%s'" format(location))
@@ -177,6 +191,10 @@ App: class {
         logger info("Removing package '%s'" format(name))
         usefile := getUsefile(name)
         package := doStage2(usefile)
+        if(usefile get("_Keep") != null) {
+            logger error("Version %s has the keepflag set. You must first unkeep it." format(usefile get("Version")))
+            return
+        }
         libDir := File new(usefile get("_LibDir"))
         package remove(libDir)
         removeUsefile(usefile)
