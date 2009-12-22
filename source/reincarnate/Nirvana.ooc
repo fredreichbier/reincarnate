@@ -38,7 +38,7 @@ Nirvana: class {
         // did we get an error?
         s := value get("__result", String)
         if(s equals("error")) {
-            APIException new(This, value get("__text", String)) throw()
+            APIException new(This, "Error when reading `%s`: %s" format(path, value get("__text", String))) throw()
         }
         value remove("__result")
         value

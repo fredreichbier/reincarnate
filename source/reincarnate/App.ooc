@@ -223,6 +223,7 @@ App: class {
             reqs parseString(package usefile get("Requires"))
             logger debug("Resolving dependencies ...")
             for(loc: String in reqs getDependencyLocations()) {
+                logger info("Installing %s as dependency." format(loc))
                 this install(loc)
             }
         }
