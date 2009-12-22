@@ -1,7 +1,7 @@
 use deadlogger
 
 import io/[File, FileReader, FileWriter]
-import structs/HashMap
+import structs/[ArrayList, HashMap]
 
 import deadlogger/[Log, Handler, Formatter]
 
@@ -52,7 +52,7 @@ App: class {
     addStage2: func (nickname: String, stage: Stage2) {
         stages2[nickname] = stage
     }
-    
+
     /** try to get the usefile described by `location` somehow. */
     doStage1: func (location: String) -> Usefile {
         /* does `location` contain a version? */
@@ -95,12 +95,38 @@ App: class {
     }
 
     _getYardPath: func ~usefile (usefile: Usefile) -> File {
-        return _getYardPath(usefile get("_Slug"))
+        return _getYardPath(usefile get("_Slug"), usefile get("Version"))
     }
 
-    _getYardPath: func ~slug (slug: String) -> File {
+    _getYardPath: func ~slug (slug: String, ver: Version) -> File {
         yard := config get("Paths.Yard", File)
-        return yard getChild("%s.use" format(slug))
+        return yard getChild("%s-%s.use" format(slug, ver))
+    }
+
+    _getYardPath: func ~latest (slug: String) -> File {
+        return _getYardPath(slug, getLatestInstalledVersion(slug)) 
+    }
+
+    getInstalledVersions: func (slug: String) -> ArrayList<Version> {
+        yard := config get("Paths.Yard", File)
+        versions := ArrayList<String> new()
+        slugLength := slug length()
+        for(child: File in yard getChildren()) {
+            if(child name() startsWith(slug + "-")) {
+                name := child name()
+                versions add(name substring(slugLength + 1, name length() - 4) as Version) /* - ".use" */
+            }
+        }
+        return versions
+    }
+
+    getLatestInstalledVersion: func (slug: String) -> Version {
+        latest := null as Version
+        for(ver: Version in getInstalledVersions(slug)) {
+            if(latest == null || ver isGreater(latest))
+                latest = ver
+        }
+        return latest
     }
 
     /** store this usefile in the yaaaaaaaaaard. */
@@ -131,14 +157,18 @@ App: class {
     }
     
     /** install the package described by `location`: do stage 1, do stage 2, install. */
-    install: func (location: String) {
+    install: func ~usefile (location: String) {
         logger info("Installing package '%s'" format(location))
         usefile := doStage1(location)
         package := doStage2(usefile)
+        install(package)
+    }
+
+    install: func ~package (package: Package) {
         libDir := package install()
-        usefile put("_LibDir", libDir getAbsolutePath())
-        dumpUsefile(usefile)
-        logger info("Installation of '%s' done." format(location))
+        package usefile put("_LibDir", libDir getAbsolutePath())
+        dumpUsefile(package usefile)
+        logger info("Installation of '%s' done." format(package usefile get("Name")))
     }
 
     /** remove the package described by `name`: get the usefile from the yard, stage 2 and ready. */
@@ -162,10 +192,13 @@ App: class {
         stage1 := stages1[usefile get("_Stage1")]
         hasUpdates := stage1 hasUpdates(usefile get("_Location"), usefile) /* stupid workaround. TODO. */
         if(hasUpdates) {
+            logger info("Updates for '%s'!" format(name))
             /* has updates! update me, baby! */
-            stage2 := doStage2(usefile)
+            package := doStage2(usefile)
             libDir := File new(usefile get("_LibDir"))
-            stage2 update(libDir)
+            /* get the new usefile. */
+            newUsefile := stage1 getUsefile(usefile get("_Location"), null)
+            package update(libDir, newUsefile)
         } else {
             logger info("Couldn't find updates for '%s'" format(name))
         }

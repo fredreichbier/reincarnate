@@ -14,9 +14,9 @@ GitPackage: class extends Package {
 
     install: func (oocLibsDir: File) -> File {
         logger debug("Installing '%s' to '%s'" format(usefile get("_Slug"), oocLibsDir path))
-        /* so, `Origin` is the address of the git repository. `git clone` it to `oocLibsDir path / _Slug`. */
+        /* so, `Origin` is the address of the git repository. `git clone` it to `oocLibsDir path / getLibDirName()`. */
         /* TODO: check if we're overwriting something. */
-        dest := oocLibsDir getChild(usefile get("_Slug"))
+        dest := oocLibsDir getChild(getLibDirName())
         if(dest exists()) {
             logger error("'%s' already exists. Should not happen." format(dest path))
         }
@@ -26,7 +26,7 @@ GitPackage: class extends Package {
     }
     
     /** do `git pull`. */
-    update: func (libDir: File) {
+    update: func (libDir: File, usefile: Usefile) {
         proc := Process new(["git", "pull"] as ArrayList<String>)
         proc setCwd(libDir path) .execute()
     }

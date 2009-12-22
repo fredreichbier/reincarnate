@@ -51,10 +51,11 @@ FileSystem: class {
     }
 
     /** extract a .tar.gz archive (package) to the directory `directory`, but check for evil stuff before.
-        Return the name of the directory.
+        The archive is required to contain exactly one directory with the package stuff inside.
+        This directory should be at `destination` after this operation.
     */
     /* TODO: windows/whatever. */
-    extractPackage: func (filename, destination: String) -> String {
+    extractPackage: func (filename, destination: String) {
         /* test the contents. */
         output: String
         result := _executeWithOutput(["tar", "-tf", filename] as ArrayList<String>, output&)
@@ -77,17 +78,16 @@ FileSystem: class {
                 Exception new(This, "Malformed package archive. '%s' shouldn't be there." format(line)) throw()
             }
         }
-        /* extract. */
-        if(!File new(destination) exists()) {
-           File new(destination) mkdir()
-        }
-        proc := Process new(["tar", "-xvf", filename, "-C", destination] as ArrayList<String>)
+        /* extract, first to a temporary directory. */
+        temp := app config get("Paths.Temp", File)
+        proc := Process new(["tar", "-xvf", filename, "-C", temp path] as ArrayList<String>)
         proc setStdout(null)
         result = proc execute()
         if(result != 0) {
             Exception new(This, "`tar` ended unexpectedly (%d)." format(result)) throw()
         }
-        return File new(destination) getChild(dir) path
+        /* move this temporary directory to `destination`. */
+        Process new(["mv", temp getChild(dir) path, destination] as ArrayList<String>) execute()
     }
 
     remove: func (path: File) {
