@@ -1,5 +1,5 @@
 OOC=ooc
-OOC_FLAGS=-sourcepath=source/ -noclean -v -g
+OOC_FLAGS=-sourcepath=source/ -noclean -v -g -driver=sequence
 
 all: reincarnate
 
