@@ -29,7 +29,9 @@ Config: class {
         /* create defaults. */
         defaults := FixedEntity new(null)
         defaults addValue("Nirvana.APITemplate", "http://nirvana.ooc-lang.org/api%s") \
-                .addValue("Nirvana.UsefileTemplate", "http://nirvana.ooc-lang.org%s")
+                .addValue("Nirvana.UsefileTemplate", "http://nirvana.ooc-lang.org%s") \
+                .addValue("Nirvana.User", "") \
+                .addValue("Nirvana.Token", "")
         if(Env get("OOC_LIBS")) {
             defaults addValue("Paths.oocLibs", File new(Env get("OOC_LIBS")))
         } else {

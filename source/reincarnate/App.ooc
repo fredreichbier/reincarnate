@@ -269,5 +269,43 @@ App: class {
             logger info("Couldn't find updates for '%s'" format(name))
         }
     }
+
+    /** return a list of installed packages. **/
+    getPackages: func -> ArrayList<Package> {
+        ret := ArrayList<Package> new()
+        yard := config get("Paths.Yard", File)
+        for(name: String in yard getChildrenNames()) {
+            if(name endsWith(".use")) {
+                reader := FileReader new(yard getChild(name))
+                usefile := Usefile new(reader)
+                ret add(doStage2(usefile))
+                reader close()
+            }
+        }
+        return ret
+    }
+
+    /** return a list of package locations. **/
+    getPackageLocations: func -> ArrayList<String> {
+        ret := ArrayList<String> new()
+        for(package: Package in getPackages()) {
+            ret add(package getLocation())
+        }
+        return ret
+    }
+
+    /** submit the usefile to nirvana */
+    submit: func ~withString (path: String) {
+        reader := FileReader new(path)
+        usefile := Usefile new(reader)
+        reader close()
+        slug: String
+        fileSystem splitExt(File new(path) name(), slug&, null)
+        submit(slug, usefile)
+    }
+
+    submit: func ~withUsefile (slug: String, usefile: Usefile) {
+        nirvana submitUsefile(slug, "" /* TODO */, usefile, true /* TODO */)
+    }
 }
 

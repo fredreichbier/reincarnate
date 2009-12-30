@@ -2,6 +2,7 @@ use curl
 use uriparser
  
 import io/FileWriter
+import structs/HashMap
 import text/StringBuffer
  
 import curl/Curl
@@ -16,10 +17,23 @@ NetError: class extends Exception {
 }
  
 Net: class {
-    downloadString: static func (url: String) -> String {
+    _packPost: static func (curl: Curl, data: HashMap<String>) -> HTTPPost {
+        post: HTTPPost = null
+        last: HTTPPost = null
+        for(key: String in data keys) {
+            formAdd(post&, last&, CurlForm copyName, key, CurlForm copyContents, data[key], CurlForm end)
+        }
+        post
+    }
+
+    downloadString: static func (url: String, post: HashMap<String>) -> String {
         buffer := StringBuffer new()
         handle := Curl new()
         handle setOpt(CurlOpt url, url)
+        if(post != null) {
+            form := _packPost(handle, post)
+            handle setOpt(CurlOpt httpPost, form)
+        }
         handle setOpt(CurlOpt writeData, buffer)
         handle setOpt(CurlOpt writeFunction,
             func (data: Pointer, size: SizeT, nmemb: SizeT, buffer: Pointer) -> SizeT {
@@ -32,6 +46,7 @@ Net: class {
         }
         return buffer toString()
     }
+    downloadString: static func ~noPost (url: String) -> String { downloadString(url, null) }
  
     downloadFile: static func (url, destination: String) {
         fw := FileWriter new(destination)

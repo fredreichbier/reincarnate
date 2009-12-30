@@ -32,4 +32,8 @@ Package: abstract class {
     remove: func ~guess {
         remove(guessLibDir())
     }
+
+    getLocation: func -> String {
+        "%s=%s" format(usefile get("_Slug"), usefile get("Version"))
+    }
 }
