@@ -12,7 +12,7 @@ import reincarnate/App
 Config: class {
     userFileName: static func -> String {
         version(linux) {
-            return "/home/%s/.reincarnate/config" format(Env get("USER"))
+            return "%s/.reincarnate/config" format(Env get("HOME"))
         }
     }
 
@@ -41,7 +41,7 @@ Config: class {
         }
         version(linux) {
             defaults addValue("Paths.Temp", File new("/var/tmp/ooc")) \
-                    .addValue("Paths.Yard", File new("/home/%s/.reincarnate/yard" format(Env get("USER"))))
+                    .addValue("Paths.Yard", File new("%s/.reincarnate/yard" format(Env get("HOME"))))
         }
         top := defaults
         /* system-wide configuration? */
