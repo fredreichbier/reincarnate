@@ -29,13 +29,13 @@ Config: class {
         /* create defaults. */
         defaults := FixedEntity new(null)
         _mirrors: MirrorList = MirrorList new()
-        _mirrors add("http://meatshop.ooc.eaxeax.de/meat/")
+        _mirrors add("http://meatshop.ooc-lang.org/meat/")
         defaults addValue("Nirvana.APITemplate", "http://nirvana.ooc-lang.org/api%s") \
                 .addValue("Nirvana.UsefileTemplate", "http://nirvana.ooc-lang.org%s") \
                 .addValue("Nirvana.User", "") \
                 .addValue("Nirvana.Token", "") \
                 .addValue("Meatshop.Mirrors", _mirrors) \
-                .addValue("Meatshop.SuperMirror", "http://meatshop.ooc.eaxeax.de") \
+                .addValue("Meatshop.SuperMirror", "http://meatshop.ooc-lang.org") \
                 .addValue("Meatshop.RelativeFilenameScheme", "/%s/%s/%s") \
                 .addValue("Meatshop.SuperMirrorSubmit", "%s/submit")
         if(Env get("OOC_LIBS")) {
@@ -47,7 +47,7 @@ Config: class {
         }
         version(linux) {
             defaults addValue("Paths.Temp", File new("/var/tmp/ooc")) \
-                    .addValue("Paths.Yard", File new("%s/.reincarnate/yard" format(Env get("HOME"))))
+                    .addValue("Paths.Yard", File new("%s/.yard" format(defaults getValue("Paths.oocLibs")))))
         }
         top := defaults
         /* system-wide configuration? */
