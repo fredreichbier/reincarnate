@@ -5,9 +5,9 @@ import structs/[ArrayList, HashMap]
 
 import deadlogger/[Log, Handler, Formatter]
 
-import reincarnate/[Config, Dependencies, FileSystem, Net, Nirvana, Usefile, Package, Version]
+import reincarnate/[Config, Dependencies, FileSystem, Mirrors, Net, Nirvana, Usefile, Package, Version]
 import reincarnate/stage1/[Stage1, Local, Nirvana, URL]
-import reincarnate/stage2/[Stage2, Archive, Git]
+import reincarnate/stage2/[Stage2, Archive, Meatshop, Git]
 
 _setupLogger: func {
     console := StdoutHandler new()
@@ -22,6 +22,7 @@ logger := Log getLogger("reincarnate.App")
 App: class {
     config: Config
     net: Net
+    mirrors: Mirrors
     nirvana: Nirvana
     fileSystem: FileSystem
     stages1: HashMap<Stage1>
@@ -32,6 +33,7 @@ App: class {
         config = Config new(this)
         net = Net new(this)
         fileSystem = FileSystem new(this)
+        mirrors = Mirrors new(this)
         stages1 = HashMap<Stage1> new()
         stages2 = HashMap<Stage2> new()
         nirvana = Nirvana new(this)
@@ -43,6 +45,7 @@ App: class {
         /* stage 2 */
         addStage2("archive", ArchiveS2 new(this))
         addStage2("git", GitS2 new(this))
+        addStage2("meatshop", MeatshopS2 new(this))
     }
 
     addStage1: func (nickname: String, stage: Stage1) {
@@ -88,6 +91,9 @@ App: class {
         if(scheme == "git") {
             /* git repo! */
             nickname = "git"
+        } else if(scheme == "meatshop") {
+            /* meatshop! */
+            nickname = "meatshop"
         }
         logger debug("Doing stage 2 nickname '%s' on '%s'." format(nickname, usefile get("_Slug")))
         usefile put("_Stage2", nickname)
