@@ -1,4 +1,5 @@
-import structs/ArrayList
+import io/[File, FileReader]
+import structs/[ArrayList, HashMap]
 import text/[StringBuffer, StringTokenizer]
 
 import gifnooc/Serialize
@@ -27,7 +28,7 @@ Registrar addEntry(MirrorList,
         first := true
         for(mirror: String in value) {
             if(!first)
-                buf append(":")
+                buf append(";")
             else
                 first = false
             buf append(mirror)
@@ -35,7 +36,7 @@ Registrar addEntry(MirrorList,
         buf toString()
     },
     func (value: String) -> MirrorList {
-        value split(":") toArrayList() as MirrorList
+        value split(";") toArrayList() as MirrorList
     },
     func (value: MirrorList) -> Bool { true },
     func (value: String) -> MirrorList { true }
@@ -56,5 +57,18 @@ Mirrors: class {
     getUrl: func (package, ver, filename: String) -> String {
         mirrorList := app config get("Meatshop.Mirrors", MirrorList)
         mirrorList get(0) append(getRelativeUrl(package, ver, filename)) /* TODO: don't get 0 always */
+    }
+
+    /** submit the package to the super mirror. */
+    submitPackage: func (package, ver, archive: String) {
+        superMirrorUrl := app config get("Meatshop.SuperMirrorSubmit", String) format( \
+                            app config get("Meatshop.SuperMirror", String)
+                        )
+        post := HashMap<String> new()
+        archiveFile := File new(archive)
+        baseName := archiveFile name()
+        post put("package", package) .put("version", ver) .put("filename", baseName) .put("@archive", archive)
+        s := app net downloadString(superMirrorUrl, post) 
+        s println()
     }
 }

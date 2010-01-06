@@ -21,7 +21,10 @@ Net: class {
         post: HTTPPost = null
         last: HTTPPost = null
         for(key: String in data keys) {
-            formAdd(post&, last&, CurlForm copyName, key, CurlForm copyContents, data[key], CurlForm end)
+            if(key startsWith('@'))
+                formAdd(post&, last&, CurlForm copyName, key substring(1), CurlForm file, data[key], CurlForm end)
+            else
+                formAdd(post&, last&, CurlForm copyName, key, CurlForm copyContents, data[key], CurlForm end)
         }
         post
     }

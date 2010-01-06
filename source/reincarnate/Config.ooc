@@ -29,14 +29,15 @@ Config: class {
         /* create defaults. */
         defaults := FixedEntity new(null)
         _mirrors: MirrorList = MirrorList new()
-        _mirrors add("http://meatshop.ooc.eaxeax.de/shop/")
+        _mirrors add("http://meatshop.ooc.eaxeax.de/meat/")
         defaults addValue("Nirvana.APITemplate", "http://nirvana.ooc-lang.org/api%s") \
                 .addValue("Nirvana.UsefileTemplate", "http://nirvana.ooc-lang.org%s") \
                 .addValue("Nirvana.User", "") \
                 .addValue("Nirvana.Token", "") \
                 .addValue("Meatshop.Mirrors", _mirrors) \
-                .addValue("Meatshop.SuperMirror", "http://meatshop.ooc.eaxeax.de/") \
-                .addValue("Meatshop.RelativeFilenameScheme", "/%s/%s/%s")
+                .addValue("Meatshop.SuperMirror", "http://meatshop.ooc.eaxeax.de") \
+                .addValue("Meatshop.RelativeFilenameScheme", "/%s/%s/%s") \
+                .addValue("Meatshop.SuperMirrorSubmit", "%s/submit")
         if(Env get("OOC_LIBS")) {
             defaults addValue("Paths.oocLibs", File new(Env get("OOC_LIBS")))
         } else {

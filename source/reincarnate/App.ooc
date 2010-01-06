@@ -83,6 +83,7 @@ App: class {
     doStage2: func (usefile: Usefile) -> Package {
         /* get the `Origin` option which describes the location of the sourcecode. */
         origin := usefile get("Origin")
+        usefile dump() println()
         if(origin == null) {
             Exception new(This, "`Origin` of '%s' is null. Can't do stage 2." format(usefile get("_Slug"))) throw()
         }
@@ -301,17 +302,21 @@ App: class {
     }
 
     /** submit the usefile to nirvana */
-    submit: func ~withString (path: String) {
+    submit: func ~withString (path, archiveFile: String) {
         reader := FileReader new(path)
         usefile := Usefile new(reader)
         reader close()
         slug: String
         fileSystem splitExt(File new(path) name(), slug&, null)
-        submit(slug, usefile)
+        submit(slug, usefile, archiveFile)
     }
 
-    submit: func ~withUsefile (slug: String, usefile: Usefile) {
+    submit: func ~withUsefile (slug: String, usefile: Usefile, archiveFile: String) {
+        /* TODO: check if archiveFile exists. */
         nirvana submitUsefile(slug, "" /* TODO */, usefile, true /* TODO */)
+        /* do we have an archive? if yes, submit it, too */
+        if(archiveFile != null)
+            mirrors submitPackage(slug, usefile get("Version"), archiveFile)
     }
 }
 
