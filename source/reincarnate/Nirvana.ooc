@@ -1,6 +1,7 @@
 use yajl
  
 import yajl/Yajl
+import curl/Highlevel
 
 import structs/[ArrayList, HashMap]
  
@@ -29,7 +30,15 @@ Nirvana: class {
     }
  
     _downloadUrl: func (path: String, post: HashMap<String>) -> String {
-        Net downloadString(_getUrl(path), post)
+        request := HTTPRequest new(_getUrl(path))
+        if(post) {
+            request setPost(FormData new(post))
+        }
+        ret := request perform()
+        if(ret != 0) {
+            NetError new(This, "Invalid CURL return value: %d" format(ret)) throw()
+        }
+        return request getString()
     }
 
     _downloadUrl: func ~noPost (path: String) -> String { _downloadUrl(path, null) }

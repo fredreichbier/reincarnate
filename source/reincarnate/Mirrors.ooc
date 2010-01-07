@@ -1,7 +1,10 @@
+use curl
+
 import io/[File, FileReader]
 import structs/[ArrayList, HashMap]
 import text/[StringBuffer, StringTokenizer]
 
+import curl/Highlevel
 import gifnooc/Serialize
 
 import reincarnate/App
@@ -67,8 +70,11 @@ Mirrors: class {
         post := HashMap<String> new()
         archiveFile := File new(archive)
         baseName := archiveFile name()
-        post put("package", package) .put("version", ver) .put("filename", baseName) .put("@archive", archive)
-        s := app net downloadString(superMirrorUrl, post) 
-        s println()
+        post put("package", package) .put("version", ver) .put("filename", baseName)
+        formData := FormData new(post)
+        formData addFieldFile("archive", archiveFile path)
+        request := HTTPRequest new(superMirrorUrl)
+        request setPost(formData)
+        request getString() println()
     }
 }
