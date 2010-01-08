@@ -105,7 +105,7 @@ Requirements: class extends ArrayList<Requirement> {
             ver := null as Version
             if(requirement op != null) {
                 /* only if there is a comparison requirement given ... */
-                ver = app findVersion(requirement)
+                ver = app yard findVersion(requirement)
                 if(ver == null) {
                     /* impossible :( */
                     Exception new(This, "Requirement can't be met: %s" format(requirement toString()))

@@ -5,7 +5,7 @@ import structs/[ArrayList, HashMap]
 
 import deadlogger/[Log, Handler, Formatter]
 
-import reincarnate/[Config, Dependencies, FileSystem, Mirrors, Net, Nirvana, Usefile, Package, Variant, Version]
+import reincarnate/[Config, Dependencies, FileSystem, Mirrors, Net, Nirvana, Usefile, Package, Variant, Version, Yard]
 import reincarnate/stage1/[Stage1, Local, Nirvana, URL]
 import reincarnate/stage2/[Stage2, Archive, Meatshop, Git]
 
@@ -27,6 +27,7 @@ App: class {
     fileSystem: FileSystem
     stages1: HashMap<Stage1>
     stages2: HashMap<Stage2>
+    yard: Yard
 
     init: func {
         /* initialize attributes. */
@@ -37,6 +38,7 @@ App: class {
         stages1 = HashMap<Stage1> new()
         stages2 = HashMap<Stage2> new()
         nirvana = Nirvana new(this)
+        yard = Yard new(this)
         /* fill stages. */
         /* stage 1 */
         addStage1("local", LocalS1 new(this))
@@ -108,107 +110,25 @@ App: class {
         stages2[nickname] getPackage(usefile)
     }
 
-    _getYardPath: func ~usefile (usefile: Usefile) -> File {
-        return _getYardPath(usefile get("_Slug"), usefile get("Version"))
-    }
-
-    _getYardPath: func ~slug (slug: String, ver: Version) -> File {
-        yard := config get("Paths.Yard", File)
-        return yard getChild("%s-%s.use" format(slug, ver))
-    }
-
-    _getYardPath: func ~latest (slug: String) -> File {
-        ver := null as Version
-        if(slug contains('=')) {
-            /* slug contains a version! */
-            ver = Version fromLocation(slug)
-            slug = slug substring(0, slug indexOf('='))
-        }
-        if(ver == null)
-            ver = getLatestInstalledVersion(slug)
-        return _getYardPath(slug, ver)
-    }
-
-    getInstalledVersions: func (slug: String) -> ArrayList<Version> {
-        yard := config get("Paths.Yard", File)
-        versions := ArrayList<String> new()
-        slugLength := slug length()
-        for(child: File in yard getChildren()) {
-            if(child name() startsWith(slug + "-")) {
-                name := child name()
-                versions add(name substring(slugLength + 1, name length() - 4) as Version) /* - ".use" */
-            }
-        }
-        return versions
-    }
-
-    getLatestInstalledVersion: func (slug: String) -> Version {
-        getLatestVersionOf(getInstalledVersions(slug))
-    }
-
-    getLatestVersionOf: static func (versions: ArrayList<Version>) -> Version {
-        latest := null as Version
-        for(ver: Version in versions) {
-            if(latest == null || ver isGreater(latest))
-                latest = ver
-        }
-        return latest
-    }
-
-    /** find a version of `requirement slug` (in the "nirvana" stage1.) that 
-      * meets `requirement` and return the greatest. If there is none, return null. 
-      */
-    findVersion: func (requirement: Requirement) -> Version {
-        versions := nirvana getVersions(requirement slug)
-        meeting := ArrayList<Version> new()
-        if(versions != null) {
-            for(ver: Version in versions) {
-                if(requirement meets(ver)) {
-                    meeting add(ver)
-                }
-            }
-            return getLatestVersionOf(meeting)
-        }
-        return null
-    }
-
     /** store this usefile in the yaaaaaaaaaard. */
     dumpUsefile: func (usefile: Usefile) {
-        path := _getYardPath(usefile) path
+        path := yard _getYardPath(usefile) path
         logger debug("Storing usefile in the yard at '%s'." format(path))
         writer := FileWriter new(path)
         writer write(usefile dump())
         writer close()
     }
 
-    /* get the usefile from the yard. */
-    getUsefile: func (slug: String) -> Usefile {
-        reader := FileReader new(_getYardPath(slug))
-        usefile := Usefile new(reader)
-        reader close()
-        usefile
-    }
-
-    /** remove the usefile from the yard. */
-    removeUsefile: func (usefile: Usefile) {
-        path := _getYardPath(usefile)
-        if(path remove() == 0) {
-            logger debug("Removed usefile from the yard at '%s'." format(path path))
-        } else {
-            logger warn("Couldn't remove the usefile at '%s'." format(path path))
-        }
-    }
-
     keep: func (name: String) {
         logger info("Keeping package '%s'" format(name))
-        usefile := getUsefile(name)
+        usefile := yard getUsefile(name)
         usefile put("_Keep", "yes")
         dumpUsefile(usefile)
     }
 
     unkeep: func (name: String) {
         logger info("Unkeeping package '%s'" format(name))
-        usefile := getUsefile(name)
+        usefile := yard getUsefile(name)
         usefile remove("_Keep")
         dumpUsefile(usefile)
     }
@@ -247,7 +167,7 @@ App: class {
     remove: func (name: String) {
         /* look for the usefile in the subdir of the oocLibs directory. */
         logger info("Removing package '%s'" format(name))
-        usefile := getUsefile(name)
+        usefile := yard getUsefile(name)
         package := doStage2(usefile)
         remove(package)
     }
@@ -259,7 +179,7 @@ App: class {
         }
         libDir := File new(package usefile get("_LibDir"))
         package remove(libDir)
-        removeUsefile(package usefile)
+        yard removeUsefile(package usefile)
         logger info("Removal of '%s' done." format(package usefile get("_Slug")))
     }
 
@@ -268,7 +188,7 @@ App: class {
     update: func (name: String) {
         /* look for the usefile in the subdir of the oocLibs directory. */
         logger info("Updating package '%s'" format(name))
-        usefile := getUsefile(name)
+        usefile := yard getUsefile(name)
         stage1 := stages1[usefile get("_Stage1")]
         hasUpdates := stage1 hasUpdates(usefile get("_Location"), usefile) /* stupid workaround. TODO. */
         if(hasUpdates) {
@@ -282,30 +202,6 @@ App: class {
         } else {
             logger info("Couldn't find updates for '%s'" format(name))
         }
-    }
-
-    /** return a list of installed packages. **/
-    getPackages: func -> ArrayList<Package> {
-        ret := ArrayList<Package> new()
-        yard := config get("Paths.Yard", File)
-        for(name: String in yard getChildrenNames()) {
-            if(name endsWith(".use")) {
-                reader := FileReader new(yard getChild(name))
-                usefile := Usefile new(reader)
-                ret add(doStage2(usefile))
-                reader close()
-            }
-        }
-        return ret
-    }
-
-    /** return a list of package locations. **/
-    getPackageLocations: func -> ArrayList<String> {
-        ret := ArrayList<String> new()
-        for(package: Package in getPackages()) {
-            ret add(package getLocation())
-        }
-        return ret
     }
 
     /** submit the usefile to nirvana */

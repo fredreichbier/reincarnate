@@ -15,7 +15,7 @@ Package: abstract class {
     }
 
     getLibDirName: func -> String {
-        return "%s-%s" format(usefile get("_Slug"), usefile get("Version"))
+        return "%s-%s-%s" format(usefile get("_Slug"), usefile get("Version"), usefile get("Variant"))
     }
 
     install: abstract func (oocLibsDir: File) -> File
