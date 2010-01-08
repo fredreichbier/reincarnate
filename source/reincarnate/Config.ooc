@@ -34,6 +34,7 @@ Config: class {
                 .addValue("Nirvana.UsefileTemplate", "http://nirvana.ooc-lang.org%s") \
                 .addValue("Nirvana.User", "") \
                 .addValue("Nirvana.Token", "") \
+                .addValue("Nirvana.DefaultVariant", "src") \
                 .addValue("Meatshop.Mirrors", _mirrors) \
                 .addValue("Meatshop.SuperMirror", "http://meatshop.ooc-lang.org") \
                 .addValue("Meatshop.RelativeFilenameScheme", "/%s/%s/%s") \

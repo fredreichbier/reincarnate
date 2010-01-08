@@ -29,11 +29,11 @@ Net: class {
             NetError new(This, "Invalid CURL return value: %d" format(ret)) throw()
     }
 
-    downloadFile: static func (url, fname: String) -> String {
+    downloadFile: static func (url, fname: String) {
         writer := FileWriter new(fname)
         request := HTTPRequest new(url, writer)
         _performRequest(request)
-        request getString()
+        writer close()
     }
 
     getBaseName: static func (url: String) -> String {

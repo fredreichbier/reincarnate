@@ -5,7 +5,7 @@ import curl/Highlevel
 
 import structs/[ArrayList, HashMap]
  
-import reincarnate/[App, Net, Usefile, Version]
+import reincarnate/[App, Net, Usefile, Variant, Version]
  
 APIException: class extends Exception {
     init: func ~withMsg (.msg) {
@@ -72,18 +72,37 @@ Nirvana: class {
         map := _interpreteUrl("/packages/%s/" format(package))
         return map keys as ArrayList<Version>
     }
- 
-    getUsefilePath: func (package: String, ver: String) -> String {
+
+    getVariants: func (package, ver: String) -> ArrayList<Variant> {
         map := _interpreteUrl("/packages/%s/%s/" format(package, ver))
+        return map keys as ArrayList<Variant>
+    }
+ 
+    getUsefilePath: func (package, ver, variant: String) -> String {
+        map := _interpreteUrl("/packages/%s/%s/%s/" format(package, ver, variant))
         return map get("usefile", String)
     }
- 
-    getUsefile: func (package: String, ver: String) -> String {
-        return Net downloadString(usefileTemplate format(getUsefilePath(package, ver)))
+
+    getChecksumsPath: func (package, ver, variant: String) -> String {
+        map := _interpreteUrl("/packages/%s/%s/%s/" format(package, ver, variant))
+        return map get("checksums", String)
+    }
+
+    getChecksumsSignaturePath: func (package, ver, variant: String) -> String {
+        map := _interpreteUrl("/packages/%s/%s/%s/" format(package, ver, variant))
+        return map get("checksums_signature", String)
+    }
+
+    getUsefile: func (package, ver, variant: String) -> String {
+        return Net downloadString(usefileTemplate format(getUsefilePath(package, ver, variant)))
     }
  
-    getLatestUsefile: func (package: String) -> String {
-        getUsefile(package, "latest")
+    getLatestUsefile: func (package, variant: String) -> String {
+        getUsefile(package, "latest", variant)
+    }
+
+    getDefaultUsefile: func (package: String) -> String {
+        getLatestUsefile(package, app config get("Nirvana.DefaultVariant", String))
     }
 
     submitUsefile: func (user, apiToken, slug, versionName: String, usefile: Usefile, makeLatest: Bool) -> String {

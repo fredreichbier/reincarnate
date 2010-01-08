@@ -10,11 +10,11 @@ Stage1: abstract class {
          
     }
 
-    getUsefile: abstract func (location, ver: String) -> Usefile
+    getUsefile: abstract func (location, ver, variant: String) -> Usefile
 
     /* compare the versions! */
     hasUpdates: func (location: String, oldUsefile: Usefile) -> Bool {
-        newUsefile := getUsefile(location, null)
+        newUsefile := getUsefile(location, null, oldUsefile get("Variant"))
         oldVersion := oldUsefile get("Version") as Version
         newVersion := newUsefile get("Version") as Version
         /* (this also handles `head`.) */

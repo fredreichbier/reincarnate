@@ -5,7 +5,7 @@ import structs/[ArrayList, HashMap]
 
 import deadlogger/[Log, Handler, Formatter]
 
-import reincarnate/[Config, Dependencies, FileSystem, Mirrors, Net, Nirvana, Usefile, Package, Version]
+import reincarnate/[Config, Dependencies, FileSystem, Mirrors, Net, Nirvana, Usefile, Package, Variant, Version]
 import reincarnate/stage1/[Stage1, Local, Nirvana, URL]
 import reincarnate/stage2/[Stage2, Archive, Meatshop, Git]
 
@@ -59,7 +59,14 @@ App: class {
     /** try to get the usefile described by `location` somehow. */
     doStage1: func (location: String) -> Usefile {
         /* does `location` contain a version? */
-        ver := null
+        ver := null as Version
+        variant := null as Variant
+        if(location contains('/')) {
+            variant = Variant fromLocation(location)
+            location = location substring(0, location lastIndexOf('/'))
+        } else {
+            variant = config get("Nirvana.DefaultVariant", String) as Variant
+        }
         if(location contains('=')) {
             ver = Version fromLocation(location)
             location = location substring(0, location indexOf('='))
@@ -73,8 +80,8 @@ App: class {
             /* local stage 1 */
             nickname = "local"
         }
-        logger debug("Doing stage 1 nickname '%s' on '%s', version '%s'." format(nickname, location, ver))
-        usefile := stages1[nickname] getUsefile(location, ver)
+        logger debug("Doing stage 1 nickname '%s' on '%s', version '%s', variant '%s'." format(nickname, location, ver, variant))
+        usefile := stages1[nickname] getUsefile(location, ver, variant)
         usefile put("_Stage1", nickname) .put("_Location", location)
         usefile
     }
@@ -270,7 +277,7 @@ App: class {
             package := doStage2(usefile)
             libDir := File new(usefile get("_LibDir"))
             /* get the new usefile. */
-            newUsefile := stage1 getUsefile(usefile get("_Location"), null)
+            newUsefile := stage1 getUsefile(usefile get("_Location"), null, usefile get("Variant"))
             package update(libDir, newUsefile)
         } else {
             logger info("Couldn't find updates for '%s'" format(name))

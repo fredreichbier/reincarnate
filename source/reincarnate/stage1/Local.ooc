@@ -9,7 +9,7 @@ LocalS1: class extends Stage1 {
         this(app)
     }
 
-    getUsefile: func (location, ver: String) -> Usefile {
+    getUsefile: func (location, ver, variant: String) -> Usefile {
         reader := FileReader new(location)
         /* TODO: version check */
         usefile := Usefile new(reader)

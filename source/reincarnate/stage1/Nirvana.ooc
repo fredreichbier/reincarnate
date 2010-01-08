@@ -8,11 +8,11 @@ NirvanaS1: class extends Stage1 {
         this(app)
     }
 
-    getUsefile: func (location, ver: String) -> Usefile {
+    getUsefile: func (location, ver, variant: String) -> Usefile {
         if(ver == null) {
             ver = "latest"
         }
-        usefile := Usefile new(app nirvana getUsefile(location, ver))
+        usefile := Usefile new(app nirvana getUsefile(location, ver, variant))
         usefile put("_Slug", location)
         return usefile
     }
