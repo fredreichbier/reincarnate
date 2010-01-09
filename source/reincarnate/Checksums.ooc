@@ -7,10 +7,25 @@ Checksums: class extends Usefile {
     }
 
     fill: func (fname: String) {
-        "moo" println()
         sha512 := FileSystem getSha512(fname)
-        sha512 println()
         put("SHA-512", sha512)
+    }
+
+    check: func (fname: String) -> Bool {
+        /* TODO: check if empty */
+        for(key: String in this keys) {
+            match(key) {
+                case "SHA-512" => {
+                    if(this get(key) != FileSystem getSha512(fname)) {
+                        return false
+                    }
+                }
+                case => {
+                    Exception new("Unknown checksum: %s" format(key))
+                }
+            }
+        }
+        return true
     }
 }
  

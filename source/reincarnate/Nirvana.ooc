@@ -88,9 +88,17 @@ Nirvana: class {
         return map get("checksums", String)
     }
 
+    getChecksumsURL: func (package, ver, variant: String) -> String {
+        usefileTemplate format(getChecksumsPath(package, ver, variant))
+    }
+
     getChecksumsSignaturePath: func (package, ver, variant: String) -> String {
         map := _interpreteUrl("/packages/%s/%s/%s/" format(package, ver, variant))
         return map get("checksums_signature", String)
+    }
+
+    getChecksumsSignatureURL: func (package, ver, variant: String) -> String {
+        usefileTemplate format(getChecksumsSignaturePath(package, ver, variant))
     }
 
     getUsefile: func (package, ver, variant: String) -> String {

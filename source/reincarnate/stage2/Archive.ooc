@@ -17,6 +17,8 @@ ArchivePackage: class extends Package {
         fname := app fileSystem getPackageFilename(app net getBaseName(url))
         logger debug("Downloading '%s' to '%s'" format(url, fname))
         app net downloadFile(url, fname)
+        /* check checksums. */
+        check(fname)
         /* then, extract to $OOC_LIBS. */
         libDir := oocLibsDir getChild(getLibDirName())
         app fileSystem extractPackage(fname, libDir path)

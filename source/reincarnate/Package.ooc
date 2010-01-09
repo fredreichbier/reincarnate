@@ -1,7 +1,11 @@
 import io/File
 import structs/ArrayList
 
-import reincarnate/[App, Usefile]
+import deadlogger/Log
+
+import reincarnate/[App, Checksums, Usefile]
+
+logger := Log getLogger("reincarnate.Package")
 
 Package: abstract class {
     app: App
@@ -35,5 +39,23 @@ Package: abstract class {
 
     getLocation: func -> String {
         "%s=%s" format(usefile get("_Slug"), usefile get("Version"))
+    }
+
+    check: func (fname: String) {
+        if(usefile contains("_ChecksumsURL")) {
+            checksums_sig := app net downloadString(usefile get("_ChecksumsSignatureURL"))
+            checksums_text := app net downloadString(usefile get("_ChecksumsURL"))
+            if(!checksums_text trim() isEmpty()) {
+                /* TODO: check signature */
+                checksums := Checksums new(null)
+                checksums readUsefile(checksums_text) /* TODO: workaround for #60, I think */
+                if(!checksums check(fname))
+                    Exception new(This, "The package at %s could not be verified." format(fname)) throw()
+                else
+                    logger info("The package %s was verified." format(fname))
+            } else {
+                logger warn("The package at %s does not have any checksums." format(fname))
+            }
+        }
     }
 }
