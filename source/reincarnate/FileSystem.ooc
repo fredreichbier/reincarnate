@@ -23,19 +23,27 @@ FileSystem: class {
     }
 
     getPackageFilename: func (name: String) -> String {
-        baseName, ext: String
-        if(!splitExt(name, baseName&, ext&)) {
+        baseName, ext1, ext2: String
+        if(!splitExt(name, baseName&, ext1&)) {
             baseName = name
-            ext = ""
+            ext1 = ""
+        }
+        _baseName := baseName clone()
+        /* TODO: that's a dirty workaround for .tar.* */
+        if(!splitExt(_baseName, baseName&, ext2&)) {
+            baseName = name
+            ext2 = ext1
+        } else {
+            ext2 = ext2 + ext1
         }
         temp := File new(app config get("Paths.Temp", String))
         baseBaseName := baseName
         i := 1
-        while(temp getChild(baseName + ext) exists()) {
+        while(temp getChild(baseName + ext2) exists()) {
             baseName = "%s%d" format(baseBaseName, i)
             i += 1
         }
-        return temp getChild(baseName + ext) path
+        return temp getChild(baseName + ext2) path
     }
 
     _executeWithOutput: func (args: ArrayList<String>, output: String*) -> Int {
@@ -50,19 +58,46 @@ FileSystem: class {
         result
     }
 
-    /** extract a .tar.gz archive (package) to the directory `directory`, but check for evil stuff before.
+    _getContentsList: func (filename, ext1, ext2: String) -> String {
+        output: String
+        line := null
+        if(ext2 == ".tar.gz" || ext2 == ".tar.bz2") {
+            line = ["tar", "-tf", filename] as ArrayList<String>
+        } else if(ext2 == ".tar.xz") {
+            line = ["tar", "--use-compress-program", "xz", "-tf", filename] as ArrayList<String>
+        } else {
+            Exception new("Unknown archive format: %s" format(filename)) throw()
+        }
+        ret := _executeWithOutput(line, output&)
+        if(ret != 0) {
+            Exception new(This, "`tar` ended unexpectedly (%d)." format(ret)) throw()
+        }
+        return output
+    }
+
+    _getExtractCommand: func (filename, ext1, ext2, dest: String) -> ArrayList<String> {
+        if(ext2 == ".tar.gz" || ext2 == ".tar.bz2")
+            return ["tar", "-xvf", filename, "-C", dest] as ArrayList<String>
+        else if(ext2 == ".tar.xz")
+            return ["tar", "-xvf", filename, "--use-compress-program", "xz", "-C", dest] as ArrayList<String>
+        else
+            Exception new("Unknown archive format: %s" format(filename)) throw()
+    }
+
+    /** extract an archive archive (package) to the directory `directory`, but check for evil stuff before.
         The archive is required to contain exactly one directory with the package stuff inside.
         This directory should be at `destination` after this operation.
     */
     /* TODO: windows/whatever. */
     extractPackage: func (filename, destination: String) {
-        /* test the contents. */
-        output: String
-        result := _executeWithOutput(["tar", "-tf", filename] as ArrayList<String>, output&)
-        if(result != 0) {
-            Exception new(This, "`tar` ended unexpectedly (%d)." format(result)) throw()
-        }
+        ext1 := ""
+        ext2 := ""
+        before := ""
+        splitExt(filename, before&, ext1&)
+        splitExt(before, null, ext2&)
+        ext2 = ext2 + ext1
         /* test for evilness */
+        output := _getContentsList(filename, ext1, ext2)
         dir := null as String
         for(line: String in output split('\n')) {
             if(line isEmpty()) {
@@ -80,9 +115,9 @@ FileSystem: class {
         }
         /* extract, first to a temporary directory. */
         temp := app config get("Paths.Temp", File)
-        proc := Process new(["tar", "-xvf", filename, "-C", temp path] as ArrayList<String>)
+        proc := Process new(_getExtractCommand(filename, ext1, ext2, temp path))
         proc setStdout(null)
-        result = proc execute()
+        result := proc execute()
         if(result != 0) {
             Exception new(This, "`tar` ended unexpectedly (%d)." format(result)) throw()
         }
