@@ -5,7 +5,7 @@ import curl/Highlevel
 
 import structs/[ArrayList, HashMap]
  
-import reincarnate/[App, Net, Usefile, Variant, Version]
+import reincarnate/[App, Checksums, Net, Usefile, Variant, Version]
  
 APIException: class extends Exception {
     init: func ~withMsg (.msg) {
@@ -105,23 +105,25 @@ Nirvana: class {
         getLatestUsefile(package, app config get("Nirvana.DefaultVariant", String))
     }
 
-    submitUsefile: func (user, apiToken, slug, versionName: String, usefile: Usefile, makeLatest: Bool) -> String {
+    submitUsefile: func (user, apiToken, slug, ver, variantName: String, usefile: Usefile, checksums: Checksums) -> String {
         post := HashMap<String> new()
         post put("usefile", usefile dump()) \
             .put("user", user) \
             .put("token", apiToken) \
-            .put("name", versionName) \
+            .put("name", variantName) \
             .put("slug", slug) \
-            .put("make_latest", makeLatest ? "true" : "false")
+            .put("version", ver)
+        if(checksums != null)
+            post put("checksums", checksums dump())
         map := _interpreteUrl("/submit/", post)
         /* errors were checked. */
-        return _getUrl(map get("path"))
+        return _getUrl(map get("path", String))
     }
 
-    submitUsefile: func ~fromConfig (slug, versionName: String, usefile: Usefile, makeLatest: Bool) -> String {
+    submitUsefile: func ~fromConfig (slug, variantName: String, usefile: Usefile, checksums: Checksums) -> String {
         if(user == "" || apiToken == "")
             APIException new(This, "No username and/or api key given in the config.") throw()
-        submitUsefile(user, apiToken, slug, versionName, usefile, makeLatest)
+        return submitUsefile(user, apiToken, slug, usefile get("Version"), variantName, usefile, checksums)
     }
 }
  

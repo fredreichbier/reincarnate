@@ -18,7 +18,7 @@ FileSystem: class {
         if(before != null)
             before@ = name substring(0, idx)
         if(after != null)
-            after@ = name substring(idx, name length())
+            after@ = name substring(idx)
         return true
     }
 
@@ -90,8 +90,14 @@ FileSystem: class {
         Process new(["mv", temp getChild(dir) path, destination] as ArrayList<String>) execute()
     }
 
-    remove: func (path: File) {
+    remove: static func (path: File) {
         Process new(["rm", "-rf", path path] as ArrayList<String>) execute()
+    }
+
+    getSha512: static func (path: String) -> String {
+        "yo" println()
+        outp := Process new(["sha512sum", path] as ArrayList<String>) getOutput()
+        outp split(" ") iterator() as Iterator<String> next()
     }
 }
  

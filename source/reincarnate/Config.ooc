@@ -3,11 +3,48 @@ use gifnooc
 import io/File
 import os/Env
 import structs/ArrayList
+import text/StringBuffer
 
-import gifnooc/Entity
+import gifnooc/[Entity, Serialize]
 import gifnooc/entities/[INI, Fixed]
 
 import reincarnate/[App, Mirrors]
+
+ExtList: class extends ArrayList<String> {
+    init: func ~withCapacity (.capacity) {
+        T = String
+        super(capacity)
+    }
+
+    init: func ~withData (.data, .size) {
+        T = String
+        super(data, size)
+    }
+}
+
+Registrar addEntry(ExtList,
+    func (value: ExtList) -> String {
+        buf := StringBuffer new()
+        first := true
+        for(mirror: String in value) {
+            if(!first)
+                buf append(", ")
+            else
+                first = false
+            buf append(mirror)
+        }
+        buf toString()
+    },
+    func (value: String) -> ExtList {
+        l := ExtList new()
+        for(ext in value split(",")) {
+            l add(ext trim())
+        }
+        l
+    },
+    func (value: ExtList) -> Bool { true },
+    func (value: String) -> ExtList { true }
+)
 
 Config: class {
     userFileName: static func -> String {
@@ -30,6 +67,8 @@ Config: class {
         defaults := FixedEntity new(null)
         _mirrors: MirrorList = MirrorList new()
         _mirrors add("http://meatshop.ooc-lang.org/meat/")
+        _exts: ExtList = ExtList new()
+        _exts add("tar.xz") .add("tar.gz") .add("tar.bz2")
         defaults addValue("Nirvana.APITemplate", "http://nirvana.ooc-lang.org/api%s") \
                 .addValue("Nirvana.UsefileTemplate", "http://nirvana.ooc-lang.org%s") \
                 .addValue("Nirvana.User", "") \
@@ -37,8 +76,9 @@ Config: class {
                 .addValue("Nirvana.DefaultVariant", "src") \
                 .addValue("Meatshop.Mirrors", _mirrors) \
                 .addValue("Meatshop.SuperMirror", "http://meatshop.ooc-lang.org") \
-                .addValue("Meatshop.RelativeFilenameScheme", "/%s/%s/%s") \
-                .addValue("Meatshop.SuperMirrorSubmit", "%s/submit")
+                .addValue("Meatshop.RelativeFilenameScheme", "/{{ package }}/{{ version }}/{{ variant }}/{{ package }}-{{ version }}-{{ variant }}.{{ type }}") \
+                .addValue("Meatshop.SuperMirrorSubmit", "%s/submit") \
+                .addValue("Meatshop.FileTypes", _exts)
         if(Env get("OOC_LIBS")) {
             defaults addValue("Paths.oocLibs", File new(Env get("OOC_LIBS")))
         } else {

@@ -12,14 +12,9 @@ MeatshopPackage: class extends Package {
 
     install: func (oocLibsDir: File) -> File {
         /* get the local filename ... */
-        filename := app net getBaseName(usefile get("Origin"))
         logger debug("Installing '%s' to '%s'" format(usefile get("_Slug"), oocLibsDir path))
-        /* first, download the archive to the yard. */
-        fname := app fileSystem getPackageFilename(filename)
-        /* construct url. */
-        url := app mirrors getUrl(usefile get("_Slug"), usefile get("Version"), filename)
-        logger debug("Downloading '%s' to '%s'" format(url, fname))
-        app net downloadFile(url, fname)
+        /* download. */
+        fname := app mirrors download(usefile get("_Slug"), usefile get("Version"), usefile get("Variant"))
         /* then, extract to $OOC_LIBS. */
         libDir := oocLibsDir getChild(getLibDirName())
         app fileSystem extractPackage(fname, libDir path)

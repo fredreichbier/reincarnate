@@ -5,7 +5,7 @@ import structs/[ArrayList, HashMap]
 
 import deadlogger/[Log, Handler, Formatter]
 
-import reincarnate/[Config, Dependencies, FileSystem, Mirrors, Net, Nirvana, Usefile, Package, Variant, Version, Yard]
+import reincarnate/[Checksums, Config, Dependencies, FileSystem, Mirrors, Net, Nirvana, Usefile, Package, Variant, Version, Yard]
 import reincarnate/stage1/[Stage1, Local, Nirvana, URL]
 import reincarnate/stage2/[Stage2, Archive, Meatshop, Git]
 
@@ -214,12 +214,21 @@ App: class {
         submit(slug, usefile, archiveFile)
     }
 
+    createChecksums: func (archiveFile: String) -> Checksums {
+        checksums := Checksums new(null) as Checksums
+        checksums fill(archiveFile)
+        checksums
+    }
+
     submit: func ~withUsefile (slug: String, usefile: Usefile, archiveFile: String) {
         /* TODO: check if archiveFile exists. */
-        nirvana submitUsefile(slug, "" /* TODO */, usefile, true /* TODO */)
+        checksums := null as Checksums
+        if(archiveFile != null)
+            checksums = createChecksums(archiveFile)
+        nirvana submitUsefile(slug, "" /* TODO */, usefile, checksums)
         /* do we have an archive? if yes, submit it, too */
         if(archiveFile != null)
-            mirrors submitPackage(slug, usefile get("Version"), archiveFile)
+            mirrors submitPackage(slug, usefile get("Version"), usefile get("Variant"), archiveFile)
     }
 }
 
