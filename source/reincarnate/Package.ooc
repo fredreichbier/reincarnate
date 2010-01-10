@@ -43,12 +43,16 @@ Package: abstract class {
 
     check: func (fname: String) {
         if(usefile contains("_ChecksumsURL")) {
-            checksums_sig := app net downloadString(usefile get("_ChecksumsSignatureURL"))
-            checksums_text := app net downloadString(usefile get("_ChecksumsURL"))
-            if(!checksums_text trim() isEmpty()) {
-                /* TODO: check signature */
+            checksumsText := app net downloadString(usefile get("_ChecksumsURL"))
+            if(!checksumsText trim() isEmpty()) {
+                checksumsSig := app fileSystem getTempFilename("sig")
+                app net downloadFile(usefile get("_ChecksumsSignatureURL"), checksumsSig) /* TODO: "sig"? */
+                if(!app gpg verify(checksumsText, File new(checksumsSig)))
+                    Exception new(This, "The checksums of %s could not be verified." format(fname)) throw()
+                else
+                    logger info("The checksums of %s were verified." format(fname))
                 checksums := Checksums new(null)
-                checksums readUsefile(checksums_text) /* TODO: workaround for #60, I think */
+                checksums readUsefile(checksumsText) /* TODO: workaround for #60, I think */
                 if(!checksums check(fname))
                     Exception new(This, "The package at %s could not be verified." format(fname)) throw()
                 else

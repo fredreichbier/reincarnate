@@ -78,7 +78,9 @@ Config: class {
                 .addValue("Meatshop.SuperMirror", "http://meatshop.ooc-lang.org") \
                 .addValue("Meatshop.RelativeFilenameScheme", "/{{ package }}/{{ version }}/{{ variant }}/{{ package }}-{{ version }}-{{ variant }}.{{ type }}") \
                 .addValue("Meatshop.SuperMirrorSubmit", "%s/submit") \
-                .addValue("Meatshop.FileTypes", _exts)
+                .addValue("Meatshop.FileTypes", _exts) \
+                .addValue("GPG.Keyring", File new("%s/.reincarnate/trusted.gpg" format(Env get("HOME")))) \
+                .addValue("GPG.Executable", File new("/usr/bin/gpg"))
         if(Env get("OOC_LIBS")) {
             defaults addValue("Paths.oocLibs", File new(Env get("OOC_LIBS")))
         } else {

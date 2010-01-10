@@ -15,7 +15,7 @@ NirvanaS1: class extends Stage1 {
         usefile := Usefile new(app nirvana getUsefile(location, ver, variant))
         usefile put("_Slug", location) \
                .put("_ChecksumsURL", app nirvana getChecksumsURL(location, ver, variant)) \
-               .put("_ChecksumsSignatureURL", app nirvana getChecksumsURL(location, ver, variant))
+               .put("_ChecksumsSignatureURL", app nirvana getChecksumsSignatureURL(location, ver, variant))
         return usefile
     }
 }

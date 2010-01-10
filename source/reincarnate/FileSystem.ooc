@@ -46,6 +46,17 @@ FileSystem: class {
         return temp getChild(baseName + ext2) path
     }
 
+    getTempFilename: func (name: String) -> String {
+        temp := File new(app config get("Paths.Temp", String))
+        i := 1
+        base := name
+        while(temp getChild(name) exists()) {
+            name = "%s.%d" format(base, i)
+            i += 1
+        }
+        return temp getChild(name) path
+    }
+
     _executeWithOutput: func (args: ArrayList<String>, output: String*) -> Int {
         proc := Process new(args)
         proc setStdout(Pipe new()) 

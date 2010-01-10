@@ -5,7 +5,7 @@ import structs/[ArrayList, HashMap]
 
 import deadlogger/[Log, Handler, Formatter]
 
-import reincarnate/[Checksums, Config, Dependencies, FileSystem, Mirrors, Net, Nirvana, Usefile, Package, Variant, Version, Yard]
+import reincarnate/[Checksums, Config, Dependencies, FileSystem, GPG, Mirrors, Net, Nirvana, Usefile, Package, Variant, Version, Yard]
 import reincarnate/stage1/[Stage1, Local, Nirvana, URL]
 import reincarnate/stage2/[Stage2, Archive, Meatshop, Git]
 
@@ -28,6 +28,7 @@ App: class {
     stages1: HashMap<Stage1>
     stages2: HashMap<Stage2>
     yard: Yard
+    gpg: GPG
 
     init: func {
         /* initialize attributes. */
@@ -39,6 +40,7 @@ App: class {
         stages2 = HashMap<Stage2> new()
         nirvana = Nirvana new(this)
         yard = Yard new(this)
+        gpg = GPG new(this)
         /* fill stages. */
         /* stage 1 */
         addStage1("local", LocalS1 new(this))
@@ -212,6 +214,11 @@ App: class {
         slug: String
         fileSystem splitExt(File new(path) name(), slug&, null)
         submit(slug, usefile, archiveFile)
+    }
+
+    /** add the gpg public key to the keyring */
+    addKey: func (filename: String) {
+        gpg addKey(filename)
     }
 
     createChecksums: func (archiveFile: String) -> Checksums {
