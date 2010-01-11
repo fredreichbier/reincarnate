@@ -117,6 +117,7 @@ Config: class {
             if(!file exists())
                 file mkdirs()
         }
+        get("GPG.Keyring", File) parent() mkdirs() /* TODO. error check? */
     }
 
     get: func <T> (path: String, T: Class) -> T {
