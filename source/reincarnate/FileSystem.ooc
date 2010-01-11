@@ -141,7 +141,6 @@ FileSystem: class {
     }
 
     getSha512: static func (path: String) -> String {
-        "yo" println()
         outp := Process new(["sha512sum", path] as ArrayList<String>) getOutput()
         outp split(" ") iterator() as Iterator<String> next()
     }
