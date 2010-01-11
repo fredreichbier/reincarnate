@@ -149,6 +149,8 @@ App: class {
         libDir := package install()
         package usefile put("_LibDir", libDir getAbsolutePath())
         dumpUsefile(package usefile)
+        /* install binaries. TODO: here? */
+        package copyBinaries()
         logger info("Installation of '%s' done." format(package usefile get("Name")))
     }
 
@@ -181,6 +183,8 @@ App: class {
         }
         libDir := File new(package usefile get("_LibDir"))
         package remove(libDir)
+        /* remove binaries. TODO: here? */
+        package removeBinaries()
         yard removeUsefile(package usefile)
         logger info("Removal of '%s' done." format(package usefile get("_Slug")))
     }

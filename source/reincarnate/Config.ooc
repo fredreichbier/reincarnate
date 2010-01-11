@@ -90,7 +90,8 @@ Config: class {
         }
         version(linux) {
             defaults addValue("Paths.Temp", File new("/var/tmp/ooc")) \
-                    .addValue("Paths.Yard", File new("%s/.yard" format(defaults getValue("Paths.oocLibs", String))))
+                    .addValue("Paths.Yard", File new("%s/.yard" format(defaults getValue("Paths.oocLibs", String)))) \
+                    .addValue("Paths.Binaries", File new("/usr/bin"))
         }
         top := defaults
         /* system-wide configuration? */

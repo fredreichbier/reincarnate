@@ -14,7 +14,6 @@ Package: abstract class {
     init: func (=app, =usefile) {}
 
     guessLibDir: func -> File {
-        usefile get("_LibDir") println()
         return File new(usefile get("_LibDir"))
     }
 
@@ -59,6 +58,51 @@ Package: abstract class {
                     logger info("The package %s was verified." format(fname))
             } else {
                 logger warn("The package at %s does not have any checksums." format(fname))
+            }
+        }
+    }
+
+    getBinaryNames: func -> ArrayList<String> {
+        result := ArrayList<String> new()
+        if(usefile contains("Binaries")) {
+            for(binary: String in usefile get("Binaries") split(',')) {
+                result add(binary trim())
+            }
+        }
+        return result
+    }
+
+    /** Copy binaries. This package has to be installed already. */
+    copyBinaries: func {
+        libDir := guessLibDir()
+        binDir := app config get("Paths.Binaries", File)
+        if(!binDir exists())
+            binDir mkdirs()
+        for(name: String in getBinaryNames()) {
+            srcChild := libDir getChild(name)
+            if(!srcChild exists()) {
+                logger critical("Binary file does not exist: %s" format(srcChild path))
+            } else {
+                destChild := binDir getChild(name)
+                if(destChild exists()) {
+                    logger critical("Binary file destination already exists: %s" format(destChild path))
+                } else {
+                    logger info("Installing %s to %s" format(srcChild path, destChild path))
+                    srcChild copyTo(destChild)
+                }
+            }
+        }
+    }
+
+    removeBinaries: func {
+        binDir := app config get("Paths.Binaries", File)
+        for(name: String in getBinaryNames()) {
+            child := binDir getChild(name)
+            if(!child exists()) {
+                logger critical("Binary file does not exist: %s" format(child path))
+            } else {
+                logger info("Removing %s" format(child path))
+                child remove()
             }
         }
     }
