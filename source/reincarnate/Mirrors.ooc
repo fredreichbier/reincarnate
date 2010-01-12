@@ -85,7 +85,7 @@ Mirrors: class {
     }
 
     /** submit the package to the super mirror. */
-    submitPackage: func (package, ver, variant, archive: String) {
+    submitPackage: func (user, token, package, ver, variant, archive: String) {
         superMirrorUrl := app config get("Meatshop.SuperMirrorSubmit", String) format( \
                             app config get("Meatshop.SuperMirror", String)
                         )
@@ -101,7 +101,12 @@ Mirrors: class {
         app fileSystem splitExt(before, null, ext&)
         ext = ext substring(1) + ext_tmp /* kick the first dot */
         /* Fill the POST data */
-        post put("package", package) .put("version", ver) .put("variant", variant) .put("ext", ext)
+        post put("package", package) \
+            .put("version", ver) \
+            .put("variant", variant) \
+            .put("ext", ext) \
+            .put("user", user) \
+            .put("token", token)
         formData := FormData new(post)
         formData addFieldFile("archive", archiveFile path)
         /* finally, do the request. */
@@ -112,5 +117,13 @@ Mirrors: class {
             Exception new(This, "Invalid CURL return code: %d" format(ret)) throw()
         }
         request getString() println()
+    }
+
+    submitPackage: func ~defaultUser (package, ver, variant, archive: String) {
+        user := app config get("Nirvana.User", String)
+        apiToken := app config get("Nirvana.Token", String)
+        if(user == "" || apiToken == "")
+            Exception new(This, "No username and/or api key given in the config.") throw()
+        submitPackage(user, apiToken, package, ver, variant, archive)    
     }
 }
