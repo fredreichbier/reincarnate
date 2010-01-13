@@ -80,7 +80,8 @@ Config: class {
                 .addValue("Meatshop.SuperMirrorSubmit", "%s/submit") \
                 .addValue("Meatshop.FileTypes", _exts) \
                 .addValue("GPG.Keyring", File new("%s/.reincarnate/trusted.gpg" format(Env get("HOME")))) \
-                .addValue("GPG.Executable", File new("/usr/bin/gpg"))
+                .addValue("GPG.Executable", File new("/usr/bin/gpg")) \
+                .addValue("Reincarnate.AutoBuild", true)
         if(Env get("OOC_LIBS")) {
             defaults addValue("Paths.oocLibs", File new(Env get("OOC_LIBS")))
         } else {

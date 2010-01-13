@@ -1,9 +1,11 @@
 import io/File
 import structs/ArrayList
+import text/Shlex
+import os/Process
 
 import deadlogger/Log
 
-import reincarnate/[App, Checksums, Usefile]
+import reincarnate/[App, Checksums, Usefile, YesNo]
 
 logger := Log getLogger("reincarnate.Package")
 
@@ -104,6 +106,32 @@ Package: abstract class {
                 logger info("Removing %s" format(child path))
                 child remove()
             }
+        }
+    }
+
+    /** If the usefile has a "Build" entry, ask the user if he'd like to invoke it. */
+    build: func {
+        if(usefile contains("Build")) {
+            cmd := usefile get("Build")
+            /* ask the user. */
+            libDirPath := guessLibDir() path
+            want := YesNo ask("Do you want to invoke `%s`? You can inspect the package contents at %s." format(cmd, libDirPath), true)
+            if(want) {
+                logger info("Invoking %s ..." format(cmd))
+                splitted := Shlex split(cmd)
+                proc := Process new(splitted)
+                proc setCwd(libDirPath)
+                ret := proc execute()
+                if(ret != 0) {
+                    logger warn("Build failed. Return code: %d" format(ret))
+                } else {
+                    logger info("Build succeeded.")
+                }
+            } else {
+                logger info("Build not invoked.")
+            }
+        } else {
+            logger info("No build info found.")
         }
     }
 }

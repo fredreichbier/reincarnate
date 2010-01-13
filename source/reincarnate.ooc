@@ -5,7 +5,7 @@ import reincarnate/App
 main: func (args: Array<String>) -> Int {
     app := App new()
     if(args size() < 3) {
-        "Syntax: reincarnate install|update|remove|keep|unkeep|submit|add-key name" println()
+        "Syntax: reincarnate install|update|remove|keep|unkeep|submit|add-key|build name" println()
         return 1
     }
     name := args[2]
@@ -22,6 +22,7 @@ main: func (args: Array<String>) -> Int {
             app submit(name, archive)
         }
         case "add-key" => app addKey(name)
+        case "build" => app build(name)
         case => "What's '%s'?" format(args[1]) println()
     }
     return 0

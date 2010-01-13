@@ -149,6 +149,9 @@ App: class {
         libDir := package install()
         package usefile put("_LibDir", libDir getAbsolutePath())
         dumpUsefile(package usefile)
+        /* build. */
+        if(config get("Reincarnate.AutoBuild", Bool))
+            package build()
         /* install binaries. TODO: here? */
         package copyBinaries()
         logger info("Installation of '%s' done." format(package usefile get("Name")))
@@ -240,6 +243,13 @@ App: class {
         /* do we have an archive? if yes, submit it, too */
         if(archiveFile != null)
             mirrors submitPackage(slug, usefile get("Version"), usefile get("Variant"), archiveFile)
+    }
+
+    build: func (loc: String) {
+        logger info("Building %s ..." format(loc))
+        usefile := yard getUsefile(loc)
+        package := doStage2(usefile)
+        package build()
     }
 }
 
