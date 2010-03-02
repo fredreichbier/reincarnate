@@ -2,7 +2,7 @@ use curl
 
 import io/[File, FileReader, FileWriter]
 import structs/[ArrayList, HashMap]
-import text/[StringBuffer, StringTokenizer, StringTemplate]
+import text/[Buffer, StringTokenizer, StringTemplate]
 
 import curl/Highlevel
 import gifnooc/Serialize
@@ -30,7 +30,7 @@ operator as (data: String*, size: SizeT) -> MirrorList {
 
 Registrar addEntry(MirrorList,
     func (value: MirrorList) -> String {
-        buf := StringBuffer new()
+        buf := Buffer new()
         first := true
         for(mirror: String in value) {
             if(!first)

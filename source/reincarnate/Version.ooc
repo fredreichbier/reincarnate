@@ -1,5 +1,5 @@
 import structs/ArrayList
-import text/[StringTokenizer, StringBuffer]
+import text/[StringTokenizer, Buffer]
 
 VersionParsingError: class extends Exception {
     init: func ~withMsg (.msg) {
@@ -56,7 +56,7 @@ Version: cover from String extends String {
         NUMBER := const 1
         NAME := const 2
         splitted := ArrayList<String> new()
-        current := StringBuffer new()
+        current := Buffer new()
 
         state := DUNNO
         for(i: SizeT in 0..length()) {
@@ -77,13 +77,13 @@ Version: cover from String extends String {
                     } else if(chr isAlpha()) {
                         /* a name follows! */
                         splitted add(current toString())
-                        current = StringBuffer new()
+                        current = Buffer new()
                         state = NAME
                         current append(chr)
                     } else {
                         /* dunno follows. */
                         splitted add(current toString())
-                        current = StringBuffer new()
+                        current = Buffer new()
                         state = DUNNO
                     }
                 }
@@ -93,13 +93,13 @@ Version: cover from String extends String {
                     } else if(chr isDigit()) {
                         /* a digit follows! */
                         splitted add(current toString())
-                        current = StringBuffer new()
+                        current = Buffer new()
                         state = NUMBER
                         current append(chr)
                     } else {
                         /* dunno follows. */
                         splitted add(current toString())
-                        current = StringBuffer new()
+                        current = Buffer new()
                         state = DUNNO
                     }
                 }

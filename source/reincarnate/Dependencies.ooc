@@ -1,5 +1,5 @@
 import structs/ArrayList
-import text/[StringBuffer, StringTokenizer]
+import text/[Buffer, StringTokenizer]
 
 import deadlogger/Log
 
@@ -46,7 +46,7 @@ Requirement: class {
             SLUG := 1
             OP := 2
             VER := 3
-            buffer := StringBuffer new()
+            buffer := Buffer new()
             state := SLUG
             for(i: SizeT in 0..s length()) {
                 chr := s[i]
@@ -55,7 +55,7 @@ Requirement: class {
                         if(chr == '=' || chr == '<' || chr == '>') {
                             /* OP follows. */
                             this slug = buffer toString() trim()
-                            buffer = StringBuffer new()
+                            buffer = Buffer new()
                             buffer append(chr)
                             state = OP
                         } else {
@@ -67,7 +67,7 @@ Requirement: class {
                         if(chr != '=' || chr != '<' || chr != '>') {
                             /* VER follows. */
                             this op = buffer toString() trim()
-                            buffer = StringBuffer new()
+                            buffer = Buffer new()
                             buffer append(chr)
                             state = VER
                         } else {

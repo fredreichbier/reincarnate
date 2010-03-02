@@ -1,6 +1,6 @@
 import structs/HashMap
 import io/Reader
-import text/[StringTokenizer, StringBuffer]
+import text/[StringTokenizer, Buffer]
 
 import reincarnate/App
  
@@ -51,7 +51,7 @@ Usefile: class extends HashMap<String> {
     readUsefile: func ~fromReader (reader: Reader) {
         BUFFER_SIZE := const 10
         tinyBuffer := String new(BUFFER_SIZE)
-        buffer := StringBuffer new()
+        buffer := Buffer new()
         while(true) {
             bytesRead := reader read(tinyBuffer, 0, BUFFER_SIZE)
             buffer append(tinyBuffer, bytesRead)
@@ -63,7 +63,7 @@ Usefile: class extends HashMap<String> {
     }
 
     dump: func -> String {
-        buffer := StringBuffer new()
+        buffer := Buffer new()
         for(key: String in this keys) {
             buffer append("%s: %s\n" format(key, this[key] as String)) /* TODO: I wanna use the [] operator without the cast. :( */
         }

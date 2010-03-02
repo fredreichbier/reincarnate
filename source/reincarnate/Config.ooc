@@ -3,7 +3,7 @@ use gifnooc
 import io/File
 import os/Env
 import structs/ArrayList
-import text/StringBuffer
+import text/Buffer
 
 import gifnooc/[Entity, Serialize]
 import gifnooc/entities/[INI, Fixed]
@@ -24,7 +24,7 @@ ExtList: class extends ArrayList<String> {
 
 Registrar addEntry(ExtList,
     func (value: ExtList) -> String {
-        buf := StringBuffer new()
+        buf := Buffer new()
         first := true
         for(mirror: String in value) {
             if(!first)
