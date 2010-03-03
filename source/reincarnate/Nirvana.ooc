@@ -32,7 +32,7 @@ Nirvana: class {
     _downloadUrl: func (path: String, post: HashMap<String>) -> String {
         request := HTTPRequest new(_getUrl(path))
         if(post) {
-            request setPost(FormData new(post))
+            request setFormData(FormData new(post))
         }
         ret := request perform()
         if(ret != 0) {

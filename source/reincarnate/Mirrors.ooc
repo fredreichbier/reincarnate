@@ -111,7 +111,7 @@ Mirrors: class {
         formData addFieldFile("archive", archiveFile path)
         /* finally, do the request. */
         request := HTTPRequest new(superMirrorUrl)
-        request setPost(formData)
+        request setFormData(formData)
         ret := request perform()
         if(ret != 0) {
             Exception new(This, "Invalid CURL return code: %d" format(ret)) throw()
