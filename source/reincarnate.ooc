@@ -1,8 +1,8 @@
-import structs/[Array, ArrayList]
+import structs/ArrayList
 
 import reincarnate/App
 
-main: func (args: Array<String>) -> Int {
+main: func (args: ArrayList<String>) -> Int {
     app := App new()
     if(args size() < 3) {
         "Syntax: reincarnate install|update|remove|keep|unkeep|submit|add-key|build name" println()
