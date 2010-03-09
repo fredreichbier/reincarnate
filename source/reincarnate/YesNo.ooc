@@ -11,7 +11,7 @@ YesNo: class {
             answer := getchar()
             if(answer == 'y' || answer == 'n') {
                 return answer == 'y'
-            } else if(answer == 0) {
+            } else if(answer == '\n') {
                 return def
             } else {
                 "Please type either y or n." println()
