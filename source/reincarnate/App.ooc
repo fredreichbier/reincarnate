@@ -25,8 +25,8 @@ App: class {
     mirrors: Mirrors
     nirvana: Nirvana
     fileSystem: FileSystem
-    stages1: HashMap<Stage1>
-    stages2: HashMap<Stage2>
+    stages1: HashMap<String, Stage1>
+    stages2: HashMap<String, Stage2>
     yard: Yard
     gpg: GPG
 
@@ -36,8 +36,8 @@ App: class {
         net = Net new(this)
         fileSystem = FileSystem new(this)
         mirrors = Mirrors new(this)
-        stages1 = HashMap<Stage1> new()
-        stages2 = HashMap<Stage2> new()
+        stages1 = HashMap<String, Stage1> new()
+        stages2 = HashMap<String, Stage2> new()
         nirvana = Nirvana new(this)
         yard = Yard new(this)
         gpg = GPG new(this)

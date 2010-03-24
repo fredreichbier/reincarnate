@@ -58,7 +58,7 @@ Mirrors: class {
     download: func (package, ver, variant: String) -> String {
         mirrorList := app config get("Meatshop.Mirrors", MirrorList)
         scheme := app config get("Meatshop.RelativeFilenameScheme", String)
-        map := HashMap<String> new()
+        map := HashMap<String, String> new()
         map put("package", package) .put("version", ver) .put("variant", variant)
         types := app config get("Meatshop.FileTypes", ExtList)
         logger info("Trying to download %s=%s/%s from the meatshop" format(package, ver, variant))
@@ -89,7 +89,7 @@ Mirrors: class {
         superMirrorUrl := app config get("Meatshop.SuperMirrorSubmit", String) format( \
                             app config get("Meatshop.SuperMirror", String)
                         )
-        post := HashMap<String> new()
+        post := HashMap<String, String> new()
         /* figure out the extension. */
         archiveFile := File new(archive)
         baseName := archiveFile name()

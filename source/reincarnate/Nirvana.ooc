@@ -29,7 +29,7 @@ Nirvana: class {
         apiTemplate format(path)
     }
  
-    _downloadUrl: func (path: String, post: HashMap<String>) -> String {
+    _downloadUrl: func (path: String, post: HashMap<String, String>) -> String {
         request := HTTPRequest new(_getUrl(path))
         if(post) {
             request setFormData(FormData new(post))
@@ -43,7 +43,7 @@ Nirvana: class {
 
     _downloadUrl: func ~noPost (path: String) -> String { _downloadUrl(path, null) }
  
-    _interpreteUrl: func (path: String, post: HashMap<String>) -> ValueMap {
+    _interpreteUrl: func (path: String, post: HashMap<String, String>) -> ValueMap {
         content := _downloadUrl(path, post)
         parser := SimpleParser new()
         parser parseAll(content)
@@ -114,7 +114,7 @@ Nirvana: class {
     }
 
     submitUsefile: func (user, apiToken, slug, ver, variantName: String, usefile: Usefile, checksums: Checksums) -> String {
-        post := HashMap<String> new()
+        post := HashMap<String, String> new()
         post put("usefile", usefile dump()) \
             .put("user", user) \
             .put("token", apiToken) \
