@@ -2,7 +2,8 @@ import reincarnate/[FileSystem, Usefile]
 
 Checksums: class extends Usefile {
     init: func ~dirtyWorkaroundSeeBug58 (pleasePassNullHere: Pointer) { /* TODO! */
-        this T = String /* TODO: ugly :( */
+        this K = String /* TODO: ugly :( */
+        this V = String
         this as Usefile init() /* TODO: workaround. */
     }
 

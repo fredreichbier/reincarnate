@@ -3,7 +3,7 @@ import text/[StringTokenizer, Buffer]
 
 VersionParsingError: class extends Exception {
     init: func ~withMsg (.msg) {
-        this(msg)
+        init(msg)
     }
 }
 

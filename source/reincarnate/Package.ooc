@@ -111,7 +111,8 @@ Package: abstract class {
 
     /** If the usefile has a "Build" entry, ask the user if he'd like to invoke it. */
     build: func {
-        if(usefile contains("Build")) {
+        hasBuild := usefile contains("Build")
+        if(hasBuild) {
             cmd := usefile get("Build")
             /* ask the user. */
             libDirPath := guessLibDir() path

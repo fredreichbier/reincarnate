@@ -3,7 +3,7 @@ import structs/ArrayList
 
 VariantParsingError: class extends Exception {
     init: func ~withMsg (.msg) {
-        this(msg)
+        init(msg)
     }
 }
 

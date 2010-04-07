@@ -6,7 +6,7 @@ import reincarnate/stage1/Stage1
 
 LocalS1: class extends Stage1 {
     init: func (.app) {
-        this(app)
+        init(app)
     }
 
     getUsefile: func (location, ver, variant: String) -> Usefile {

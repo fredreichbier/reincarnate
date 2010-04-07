@@ -12,18 +12,21 @@ UsefileParseError: class extends Exception {
  
 Usefile: class extends HashMap<String, String> {
     init: func ~dirtyWorkaroundSeeBug58 (pleasePassNullHere: Pointer) { /* TODO! */
-        this T = String /* TODO: ugly :( */
+        this K = String /* TODO: ugly :( */
+        this V = String
         super()
     }
 
     init: func ~fromString (str: String) {
-        T = String /* TODO: ugly :( */
+        K = String /* TODO: ugly :( */
+        V = String
         super()
         readUsefile(str)
     }
  
     init: func ~fromReader (reader: Reader) {
-        T = String /* TODO: ugly :( */
+        K = String /* TODO: ugly :( */
+        V = String
         super()
         readUsefile(reader)
     }
