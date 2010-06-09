@@ -1,2 +1,4 @@
 reincarnate
-*_tmp
+rock_tmp
+.libs
+*/.libs
