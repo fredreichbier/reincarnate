@@ -1,0 +1,6 @@
+Name: Reincarnate
+Version: vcs
+Variant: danopia
+Origin: git://github.com/danopia/reincarnate.git
+Description: Package manager for ooc
+SourcePath: source
