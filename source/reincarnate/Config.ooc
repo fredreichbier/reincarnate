@@ -101,7 +101,7 @@ Config: class {
                     .addValue("Paths.Yard", File new("%s/.yard" format(defaults getValue("Paths.oocLibs", String)))) \
                     .addValue("Paths.Binaries", File new("/usr/bin"))
         }
-        top := defaults
+        top := defaults as Entity
         /* system-wide configuration? */
         if(File new(systemFileName()) exists()) {
             top = INIEntity new(top, systemFileName())

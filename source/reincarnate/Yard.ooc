@@ -21,6 +21,9 @@ Yard: class {
     }
 
     _getYardPath: func ~slug (slug: String, ver: Version, variant: Variant) -> File {
+        if (!variant)
+            variant = app config get("Nirvana.DefaultVariant", String)
+        
         return yardPath getChild("%s-%s-%s.use" format(slug, ver, variant))
     }
 
@@ -30,8 +33,6 @@ Yard: class {
         if(slug contains('/')) {
             variant = Variant fromLocation(slug)
             slug = slug substring(0, slug lastIndexOf('/'))
-        } else {
-            variant = app config get("Nirvana.DefaultVariant", String) as Variant
         }
         if(slug contains('=')) {
             ver = Version fromLocation(slug)
@@ -64,7 +65,7 @@ Yard: class {
         for(child: File in yardPath getChildren()) {
             if(child name() startsWith(start)) {
                 name := child name()
-                variants add(name substring(startLength + 1, name length() - 4) as Variant) /* - ".use" */
+                variants add(name substring(startLength, name length() - 4) as Variant) /* - ".use" */
             }
         }
         return variants

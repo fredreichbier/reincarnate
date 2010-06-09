@@ -26,7 +26,7 @@ MeatshopPackage: class extends Package {
     
     /** we take it easy: updating is removing plus reinstallation */
     update: func (libDir: File, usefile: Usefile) {
-        dir := libDir parent()
+        //dir := libDir parent()
         app remove(this)
         app install(app doStage2(usefile))
     }

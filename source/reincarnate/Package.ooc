@@ -20,7 +20,11 @@ Package: abstract class {
     }
 
     getLibDirName: func -> String {
-        return "%s-%s-%s" format(usefile get("_Slug"), usefile get("Version"), usefile get("Variant"))
+        variant := usefile get("Variant")
+        if (!variant)
+          variant = app config get("Nirvana.DefaultVariant", String)
+        
+        return "%s-%s-%s" format(usefile get("_Slug"), usefile get("Version"), variant)
     }
 
     install: abstract func (oocLibsDir: File) -> File

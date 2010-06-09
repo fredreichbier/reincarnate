@@ -91,8 +91,9 @@ FileSystem: class {
             return ["tar", "-xvf", filename, "-C", dest] as ArrayList<String>
         else if(ext2 == ".tar.xz")
             return ["tar", "-xvf", filename, "--use-compress-program", "xz", "-C", dest] as ArrayList<String>
-        else
-            Exception new("Unknown archive format: %s" format(filename)) throw()
+        
+        Exception new("Unknown archive format: %s" format(filename)) throw()
+        return null
     }
 
     /** extract an archive archive (package) to the directory `directory`, but check for evil stuff before.
