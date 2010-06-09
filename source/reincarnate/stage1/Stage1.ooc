@@ -6,9 +6,7 @@ import reincarnate/[App, Usefile, Version]
 Stage1: abstract class {
     app: App
     
-    init: func (=app) {
-         
-    }
+    init: func (=app) {}
 
     getUsefile: abstract func (location, ver, variant: String) -> Usefile
 

@@ -17,5 +17,7 @@ YesNo: class {
                 "Please type either y or n." println()
             }
         }
+        
+        return false
     }
 }

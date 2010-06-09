@@ -4,9 +4,7 @@ import reincarnate/[App, Nirvana, Usefile, Version]
 import reincarnate/stage1/Stage1
 
 NirvanaS1: class extends Stage1 {
-    init: func (.app) {
-        init(app)
-    }
+    init: super func
 
     getUsefile: func (location, ver, variant: String) -> Usefile {
         if(ver == null) {

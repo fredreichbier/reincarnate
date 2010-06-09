@@ -1,4 +1,6 @@
 use curl
+use gifnooc
+use deadlogger
 
 import io/[File, FileReader, FileWriter]
 import structs/[ArrayList, HashMap]
@@ -22,11 +24,16 @@ MirrorList: class extends ArrayList<String> {
         T = String
         super(data, size)
     }
+
+    init: func {
+        T = String
+        super()
+    }
 }
 
-operator as (data: String*, size: SizeT) -> MirrorList {
-    MirrorList new(data, size)
-}
+//operator as (data: String*, size: SizeT) -> MirrorList {
+//    MirrorList new(data, size)
+//}
 
 Registrar addEntry(MirrorList,
     func (value: MirrorList) -> String {
@@ -41,11 +48,16 @@ Registrar addEntry(MirrorList,
         }
         buf toString()
     },
-    func (value: String) -> MirrorList {
-        value split(";") toArrayList() as MirrorList
+    func (value: String) -> MirrorList { // TODO TODO TODO
+        //list := value split(";") as ArrayList<String>
+        //MirrorList new(list data, list size)
+        
+        list := MirrorList new()
+        list add(value)
+        list
     },
     func (value: MirrorList) -> Bool { true },
-    func (value: String) -> MirrorList { true }
+    func (value: String) -> Bool { true }
 )
 
 Mirrors: class {
@@ -55,7 +67,8 @@ Mirrors: class {
         
     }
 
-    download: func (package, ver, variant: String) -> String {
+    download: func (package, ver, variant: String) -> String { // TODO TODO TODO TODO TODO
+    /*
         mirrorList := app config get("Meatshop.Mirrors", MirrorList)
         scheme := app config get("Meatshop.RelativeFilenameScheme", String)
         map := HashMap<String, String> new()
@@ -63,10 +76,10 @@ Mirrors: class {
         types := app config get("Meatshop.FileTypes", ExtList)
         logger info("Trying to download %s=%s/%s from the meatshop" format(package, ver, variant))
         gotcha := false
-        for(mirror: String in mirrorList) {
-            for(type: String in types) {
+        for(mirror in mirrorList) {
+            for(type in types) {
                 map put("type", type)
-                dest := app fileSystem getPackageFilename("{{ package }}-{{ version }}-{{ variant }}.{{ type }}" formatTemplate(map)) /* TODO: not nice. */
+                dest := app fileSystem getPackageFilename("{{ package }}-{{ version }}-{{ variant }}.{{ type }}" formatTemplate(map)) // TODO: not nice.
                 writer := FileWriter new(dest)
                 url := mirror + scheme formatTemplate(map)
                 logger debug("Trying %s to %s ..." format(url, dest))
@@ -74,14 +87,15 @@ Mirrors: class {
                 curl perform()
                 writer close()
                 if(curl getResponseCode() == 200) {
-                    /* yay! gotcha! we can break now. */
+                    // yay! gotcha! we can break now.
                     return dest
                 }
                 logger debug("No success.")
             }
         }
         Exception new(This, "Couldn't download %s=%s/%s from the meatshop." format(package, ver, variant)) throw()
-        null
+        null*/
+        ""
     }
 
     /** submit the package to the super mirror. */

@@ -3,7 +3,7 @@ use gifnooc
 import io/File
 import os/Env
 import structs/ArrayList
-import text/Buffer
+import text/[Buffer, StringTokenizer]
 
 import gifnooc/[Entity, Serialize]
 import gifnooc/entities/[INI, Fixed]
@@ -11,6 +11,11 @@ import gifnooc/entities/[INI, Fixed]
 import reincarnate/[App, Mirrors]
 
 ExtList: class extends ArrayList<String> {
+    init: func {
+        T = String
+        super()
+    }
+
     init: func ~withCapacity (.capacity) {
         T = String
         super(capacity)
@@ -43,7 +48,7 @@ Registrar addEntry(ExtList,
         l
     },
     func (value: ExtList) -> Bool { true },
-    func (value: String) -> ExtList { true }
+    func (value: String) -> Bool { true }
 )
 
 Config: class {
@@ -51,12 +56,14 @@ Config: class {
         version(linux) {
             return "%s/.reincarnate/config" format(Env get("HOME"))
         }
+        return "reincarnate/config" // TODO: Do this the right way
     }
 
     systemFileName: static func -> String {
         version(linux) {
             return "/etc/reincarnate.conf"
         }
+        return "C://reincarnate.conf" // TODO: Do this the right way
     }
 
     entity: Entity
@@ -113,7 +120,7 @@ Config: class {
     createDirectories: func {
         file := null as File
         paths := ["Paths.oocLibs", "Paths.Yard", "Paths.Temp"] as ArrayList<String>
-        for(path: String in paths) {
+        for(path in paths) {
             file = get(path, File)
             if(!file exists())
                 file mkdirs()

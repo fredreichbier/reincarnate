@@ -11,23 +11,19 @@ UsefileParseError: class extends Exception {
 }
  
 Usefile: class extends HashMap<String, String> {
-    init: func ~dirtyWorkaroundSeeBug58 (pleasePassNullHere: Pointer) { /* TODO! */
+    init: func () {
         this K = String /* TODO: ugly :( */
         this V = String
         super()
     }
 
     init: func ~fromString (str: String) {
-        K = String /* TODO: ugly :( */
-        V = String
-        super()
+        init()
         readUsefile(str)
     }
  
     init: func ~fromReader (reader: Reader) {
-        K = String /* TODO: ugly :( */
-        V = String
-        super()
+        init()
         readUsefile(reader)
     }
  

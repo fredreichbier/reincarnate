@@ -1,6 +1,7 @@
 import io/[File, FileReader]
 import structs/ArrayList
 
+use deadlogger
 import deadlogger/Log
 
 import reincarnate/[App, Dependencies, Package, Usefile, Variant, Version]
@@ -16,7 +17,7 @@ Yard: class {
     }
 
     _getYardPath: func ~usefile (usefile: Usefile) -> File {
-        return _getYardPath(usefile get("_Slug"), usefile get("Version"), usefile get("Variant"))
+        return _getYardPath~slug(usefile get("_Slug"), usefile get("Version") as Version, usefile get("Variant") as Variant)
     }
 
     _getYardPath: func ~slug (slug: String, ver: Version, variant: Variant) -> File {
