@@ -2,6 +2,7 @@ use deadlogger
 
 import io/[File, FileReader, FileWriter]
 import structs/[ArrayList, HashMap]
+import text/StringTokenizer
 
 import deadlogger/[Log, Handler, Formatter]
 
@@ -133,6 +134,17 @@ App: class {
         usefile := yard getUsefile(name)
         usefile remove("_Keep")
         dumpUsefile(usefile)
+    }
+    
+    installedPackages: func -> ArrayList<ArrayList<String>> {
+        list := ArrayList<Package> new()
+        for(child in yard yardPath getChildren()) {
+            name := child name()
+            
+            if (name endsWith(".use"))
+              list add(name[0..-5] split('-') toArrayList())
+        }
+        list
     }
        
     /** install the package described by `location`: do stage 1, do stage 2, install. */
