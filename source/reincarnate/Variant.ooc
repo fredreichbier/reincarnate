@@ -23,7 +23,7 @@ Variant: cover from String extends String {
             return variant
         } else {
             /* no version. return null. */
-            return ""
+            return null as This
         }
     }
 }
