@@ -43,7 +43,7 @@ Version: cover from String extends String {
             return Version new(ver)
         } else {
             /* no version. return null. */
-            return null
+            return null as This
         }
     }
 
