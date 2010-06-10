@@ -4,3 +4,6 @@ Variant: danopia
 Origin: git://github.com/danopia/reincarnate.git
 Description: Package manager for ooc
 SourcePath: source
+Requires: curl deadlogger gifnooc/danopia oocini uriparser/danopia yajl
+Build: make
+Binaries: reincarnate
