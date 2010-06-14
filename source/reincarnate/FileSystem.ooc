@@ -5,6 +5,8 @@ import text/StringTokenizer
  
 import reincarnate/App
 
+// TODO: Part of this is hacky and part of this is Linux-specific.
+
 FileSystem: class {
     app: App
 

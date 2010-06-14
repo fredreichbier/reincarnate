@@ -1,13 +1,9 @@
 import structs/HashMap
 import io/Reader
 import text/[StringTokenizer, Buffer]
-
-import reincarnate/App
  
 UsefileParseError: class extends Exception {
-    init: func ~withMsg (.msg) {
-        super(msg)
-    }
+    init: super func
 }
  
 Usefile: class extends HashMap<String, String> {

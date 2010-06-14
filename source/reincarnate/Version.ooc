@@ -2,9 +2,7 @@ import structs/ArrayList
 import text/[StringTokenizer, Buffer]
 
 VersionParsingError: class extends Exception {
-    init: func ~withMsg (.msg) {
-        init(msg)
-    }
+    init: super func
 }
 
 _isDigit: func (s: String) -> Bool {

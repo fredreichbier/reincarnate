@@ -1,6 +1,3 @@
-import text/StringTokenizer
-import structs/ArrayList
-
 VariantParsingError: class extends Exception {
     init: super func
 }

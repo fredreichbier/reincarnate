@@ -63,9 +63,7 @@ Registrar addEntry(MirrorList,
 Mirrors: class {
     app: App
     
-    init: func (=app) {
-        
-    }
+    init: func (=app) {}
 
     download: func (package, ver, variant: String) -> String { // TODO TODO TODO TODO TODO
     /*
