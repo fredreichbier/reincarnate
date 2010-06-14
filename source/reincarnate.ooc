@@ -20,6 +20,12 @@ main: func (args: ArrayList<String>) -> Int {
                 "%s (%s, %s)" format(info[0], info[1], info[2]) println()
             }
             return 0
+        
+        case "update" =>
+            if (args size() == 2) {
+                app updateAll()
+                return 0
+            }
     }
     
     

@@ -137,7 +137,7 @@ App: class {
     }
     
     installedPackages: func -> ArrayList<ArrayList<String>> {
-        list := ArrayList<Package> new()
+        list := ArrayList<ArrayList<String>> new()
         for(child in yard yardPath getChildren()) {
             name := child name()
             
@@ -223,6 +223,12 @@ App: class {
         } else {
             logger info("Couldn't find updates for '%s'" format(name))
         }
+    }
+    
+    updateAll: func {
+      for (package: ArrayList<String> in installedPackages()) {
+        update(package[0])
+      }
     }
 
     /** submit the usefile to nirvana */
