@@ -112,9 +112,9 @@ Version: cover from String extends String {
       * @return true if `this` is greater than `other`.
       */
     isGreater: func (other: This) -> Bool {
-        /* `head` beats everything. */
-        if(this equals("head"))
-            return true
+        /* `head` beats everything, except `head`. */
+        if(this == "head")
+            return !(other == "head")
         /*
             "0.1" > "0.0.1"
             "0.1b" > "0.1a"
