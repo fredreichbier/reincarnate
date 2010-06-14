@@ -176,8 +176,13 @@ App: class {
             reqs parseString(package usefile get("Requires"))
             logger debug("Resolving dependencies ...")
             for(loc: String in reqs getDependencyLocations()) {
-                logger info("Installing %s as dependency." format(loc))
-                this install(loc)
+                if (yard _getYardPath(loc) exists()) {
+                    logger info("Updating %s as dependency." format(loc))
+                    this update(loc)
+                } else {
+                    logger info("Installing %s as dependency." format(loc))
+                    this install(loc)
+                }
             }
         }
     }
