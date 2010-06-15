@@ -10,7 +10,7 @@ import curl/Highlevel
 import gifnooc/Serialize
 import deadlogger/Log
 
-import reincarnate/[App, Config]
+import reincarnate/[App, Net, Config]
 
 logger := Log getLogger("reincarnate.Mirrors")
 
@@ -82,7 +82,7 @@ Mirrors: class {
                 url := mirror + scheme formatTemplate(map)
                 logger debug("Trying %s to %s ..." format(url, dest))
                 curl := HTTPRequest new(url, writer)
-                curl perform()
+                Net _performRequest(curl)
                 writer close()
                 if(curl getResponseCode() == 200) {
                     // yay! gotcha! we can break now.
@@ -124,10 +124,7 @@ Mirrors: class {
         /* finally, do the request. */
         request := HTTPRequest new(superMirrorUrl)
         request setFormData(formData)
-        ret := request perform()
-        if(ret != 0) {
-            Exception new(This, "Invalid CURL return code: %d" format(ret)) throw()
-        }
+        Net _performRequest(request)
         request getString() println()
     }
 

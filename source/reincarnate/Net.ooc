@@ -11,12 +11,14 @@ import uriparser/UriParser
 import reincarnate/App
  
 NetError: class extends Exception {
-    init: func ~withMsg (.msg) {
-        super(msg)
-    }
+    init: super func
 }
  
 Net: class {
+    app: App
+
+    init: func (=app) {}
+    
     downloadString: static func (url: String) -> String {
         request := HTTPRequest new(url)
         _performRequest(request)
@@ -24,6 +26,7 @@ Net: class {
     }
 
     _performRequest: static func (request: HTTPRequest) {
+        request header("User-Agent: reincarnate/0.1")
         ret := request perform()
         if(ret != 0)
             NetError new(This, "Invalid CURL return value: %d" format(ret)) throw()
@@ -60,11 +63,5 @@ Net: class {
             NetError new(This, "Error parsing URI '%s': %d" format(url, errorCode)) throw()
         }
         return uri@ scheme copy()
-    }
-
-    app: App
-
-    init: func (=app) {
-    
     }
 }

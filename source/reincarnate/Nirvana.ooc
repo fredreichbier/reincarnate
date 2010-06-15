@@ -1,6 +1,7 @@
 use yajl
- 
 import yajl/Yajl
+
+use curl
 import curl/Highlevel
 
 import structs/[ArrayList, HashMap]
@@ -34,10 +35,7 @@ Nirvana: class {
         if(post) {
             request setFormData(FormData new(post))
         }
-        ret := request perform()
-        if(ret != 0) {
-            NetError new(This, "Invalid CURL return value: %d" format(ret)) throw()
-        }
+        Net _performRequest(request)
         return request getString()
     }
 
