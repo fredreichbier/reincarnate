@@ -21,7 +21,7 @@ ExtList: class extends ArrayList<String> {
         super(capacity)
     }
 
-    init: func ~withData (.data, .size) {
+    init: func ~withData (data: String*, .size) {
         T = String
         super(data, size)
     }

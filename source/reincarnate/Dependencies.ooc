@@ -124,7 +124,7 @@ Requirements: class extends ArrayList<Requirement> {
                 }
             }
             if(add)
-                locations add(loc)
+                locations add(loc as Requirement)
         }
         return locations
     }
