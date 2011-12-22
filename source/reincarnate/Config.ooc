@@ -3,7 +3,7 @@ use gifnooc
 import io/File
 import os/Env
 import structs/ArrayList
-import text/[Buffer, StringTokenizer]
+import text/StringTokenizer
 
 import gifnooc/[Entity, Serialize]
 import gifnooc/entities/[INI, Fixed]
@@ -27,8 +27,9 @@ ExtList: class extends ArrayList<String> {
     }
 }
 
-Registrar addEntry(ExtList,
-    func (value: ExtList) -> String {
+SerializeExtList: class extends SerializationEntry<ExtList> {
+    serialize: func <T> (val: T) -> String {
+        value := val as ExtList
         buf := Buffer new()
         first := true
         for(mirror: String in value) {
@@ -39,17 +40,21 @@ Registrar addEntry(ExtList,
             buf append(mirror)
         }
         buf toString()
-    },
-    func (value: String) -> ExtList {
+    }
+
+    deserialize: func <T> (value: String, T: Class) -> T {
         l := ExtList new()
         for(ext in value split(",")) {
             l add(ext trim())
         }
         l
-    },
-    func (value: ExtList) -> Bool { true },
-    func (value: String) -> Bool { true }
-)
+    }
+
+    validateValue: func <T> (value: T) -> Bool { true }
+    validateString: func (value: String) -> Bool { true }
+}
+
+Registrar addEntry(ExtList, SerializeExtList<ExtList> new())
 
 Config: class {
     userFileName: static func -> String {
@@ -103,11 +108,11 @@ Config: class {
         }
         top := defaults as Entity
         /* system-wide configuration? */
-        if(File new(systemFileName()) exists()) {
+        if(File new(systemFileName()) exists?()) {
             top = INIEntity new(top, systemFileName())
         }
         /* user-wide configuration? */
-        if(File new(userFileName()) exists()) {
+        if(File new(userFileName()) exists?()) {
             top = INIEntity new(top, userFileName())
         }
         /* and set it. */
@@ -116,13 +121,13 @@ Config: class {
         createDirectories()
     }
 
-    /** create all directories mentioned in the configuration if they don't already exist. */
+    /** create all directories mentioned in the configuration if they don't already exists?. */
     createDirectories: func {
         file := null as File
         paths := ["Paths.oocLibs", "Paths.Yard", "Paths.Temp"] as ArrayList<String>
         for(path in paths) {
             file = get(path, File)
-            if(!file exists())
+            if(!file exists?())
                 file mkdirs()
         }
         get("GPG.Keyring", File) parent() mkdirs() /* TODO. error check? */

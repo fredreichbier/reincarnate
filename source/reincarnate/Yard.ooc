@@ -30,11 +30,11 @@ Yard: class {
     _getYardPath: func ~latest (slug: String) -> File {
         ver := null as Version
         variant := null as Variant
-        if(slug contains('/')) {
+        if(slug contains?('/')) {
             variant = Variant fromLocation(slug)
             slug = slug substring(0, slug lastIndexOf('/'))
         }
-        if(slug contains('=')) {
+        if(slug contains?('=')) {
             ver = Version fromLocation(slug)
             slug = slug substring(0, slug indexOf('='))
         }        
@@ -49,7 +49,7 @@ Yard: class {
         versions := ArrayList<String> new()
         slugLength := slug length()
         for(child: File in yardPath getChildren()) {
-            if(child name() startsWith(slug + "-")) {
+            if(child name() startsWith?(slug + "-")) {
                 name := child name()
                 lastHyphen := name lastIndexOf('-')
                 versions add(name substring(slugLength + 1, lastHyphen) as Version) /* - ".use" - variant */
@@ -63,7 +63,7 @@ Yard: class {
         start := "%s-%s-" format(slug, ver)
         startLength := start length()
         for(child: File in yardPath getChildren()) {
-            if(child name() startsWith(start)) {
+            if(child name() startsWith?(start)) {
                 name := child name()
                 variants add(name substring(startLength, name length() - 4) as Variant) /* - ".use" */
             }
@@ -102,14 +102,14 @@ Yard: class {
             }
             return getLatestVersionOf(meeting)
         }
-        return null
+        return null as Version
     }
 
     /** return a list of installed packages. **/
     getPackages: func -> ArrayList<Package> {
         ret := ArrayList<Package> new()
         for(name: String in yardPath getChildrenNames()) {
-            if(name endsWith(".use")) {
+            if(name endsWith?(".use")) {
                 reader := FileReader new(yardPath getChild(name))
                 usefile := Usefile new(reader)
                 ret add(app doStage2(usefile))

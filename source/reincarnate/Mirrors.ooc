@@ -4,7 +4,7 @@ use deadlogger
 
 import io/[File, FileReader, FileWriter]
 import structs/[ArrayList, HashMap]
-import text/[Buffer, StringTokenizer, StringTemplate]
+import text/[StringTokenizer, StringTemplate]
 
 import curl/Highlevel
 import gifnooc/Serialize
@@ -35,8 +35,9 @@ MirrorList: class extends ArrayList<String> {
 //    MirrorList new(data, size)
 //}
 
-Registrar addEntry(MirrorList,
-    func (value: MirrorList) -> String {
+SerializeMirrorList: class extends SerializationEntry<MirrorList> {
+    serialize: func <T> (val: T) -> String {
+        value := val as MirrorList
         buf := Buffer new()
         first := true
         for(mirror: String in value) {
@@ -47,18 +48,22 @@ Registrar addEntry(MirrorList,
             buf append(mirror)
         }
         buf toString()
-    },
-    func (value: String) -> MirrorList { // TODO TODO TODO
+    }
+
+    deserialize: func <T> (value: String, T: Class) -> T { // TODO TODO TODO
         //list := value split(";") as ArrayList<String>
         //MirrorList new(list data, list size)
         
         list := MirrorList new()
         list add(value)
         list
-    },
-    func (value: MirrorList) -> Bool { true },
-    func (value: String) -> Bool { true }
-)
+    }
+
+    validateValue: func <T> (value: T) -> Bool { true }
+    validateString: func (value: String) -> Bool { true }
+}
+
+Registrar addEntry(MirrorList, SerializeMirrorList<MirrorList> new())
 
 Mirrors: class {
     app: App

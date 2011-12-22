@@ -3,7 +3,6 @@ use uriparser
  
 import io/FileWriter
 import structs/HashMap
-import text/Buffer
 
 import curl/Highlevel 
 import uriparser/UriParser

@@ -1,6 +1,6 @@
 import structs/HashMap
 import io/Reader
-import text/[StringTokenizer, Buffer]
+import text/[StringTokenizer]
  
 UsefileParseError: class extends Exception {
     init: super func
@@ -35,7 +35,7 @@ Usefile: class extends HashMap<String, String> {
     readUsefile: func ~fromString (str: String) {
         key, value: String
         for(line: String in str split('\n')) {
-            if(line length() > 0 && !line startsWith("#")) { /* ignore empty lines and comments */
+            if(line length() > 0 && !line startsWith?("#")) { /* ignore empty lines and comments */
                 _splitLine(line, key&, value&)
                 this[key] = value
             }
@@ -45,11 +45,10 @@ Usefile: class extends HashMap<String, String> {
     /* TODO: implement that nicer */
     readUsefile: func ~fromReader (reader: Reader) {
         BUFFER_SIZE := const 10
-        tinyBuffer := String new(BUFFER_SIZE)
+        tinyBuffer := Buffer new(BUFFER_SIZE)
         buffer := Buffer new()
         while(true) {
-            bytesRead := reader read(tinyBuffer, 0, BUFFER_SIZE)
-            buffer append(tinyBuffer, bytesRead)
+            bytesRead := reader read(tinyBuffer)
             if(bytesRead < BUFFER_SIZE) {
                 break
             }
@@ -59,7 +58,7 @@ Usefile: class extends HashMap<String, String> {
 
     dump: func -> String {
         buffer := Buffer new()
-        for(key: String in this keys) {
+        for(key: String in this getKeys()) {
             buffer append("%s: %s\n" format(key, this[key] as String)) /* TODO: I wanna use the [] operator without the cast. :( */
         }
         buffer toString()

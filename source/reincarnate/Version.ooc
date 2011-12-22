@@ -1,21 +1,21 @@
 import structs/ArrayList
-import text/[StringTokenizer, Buffer]
+import text/[StringTokenizer]
 
 VersionParsingError: class extends Exception {
     init: super func
 }
 
-_isDigit: func (s: String) -> Bool {
+_digit?: func (s: String) -> Bool {
     for(c: Char in s) {
-        if(!c isDigit())
+        if(!c digit?())
             return false
     }
     return true
 }
 
-_isAlpha: func (s: String) -> Bool {
+_alpha?: func (s: String) -> Bool {
     for(c: Char in s) {
-        if(!c isAlpha())
+        if(!c alpha?())
             return false
     }
     return true
@@ -24,15 +24,15 @@ _isAlpha: func (s: String) -> Bool {
 ALPHA_RANKS := ArrayList<String> new()
 ALPHA_RANKS add("a") .add("alpha") .add("b") .add("beta") .add("dev")
 
-Version: cover from String extends String {
-    new: static func ~withString (s: String) -> This {
-        return s clone() as Version
+Version: class extends String {
+    init: func ~fromString (s: String) {
+        _buffer = s clone() _buffer // we're evil like that
     }
-    
+
     fromLocation: static func (location: String) -> This {
-        if(location contains('=')) {
-            /* contains a version */
-            splitted := location split('=', 1) toArrayList()
+        if(location contains?('=')) {
+            /* contains? a version */
+            splitted := location split('=', 1)
             package := splitted get(0)
             ver := splitted get(1)
             if(ver == null) {
@@ -61,18 +61,18 @@ Version: cover from String extends String {
             chr := this[i]
             match state {
                 case DUNNO => {
-                    if(chr isDigit()) {
+                    if(chr digit?()) {
                         state = NUMBER
                         current append(chr)
-                    } else if(chr isAlpha()) {
+                    } else if(chr alpha?()) {
                         state = NAME
                         current append(chr)
                     }
                 }
                 case NUMBER => {
-                    if(chr isDigit()) {
+                    if(chr digit?()) {
                         current append(chr)
-                    } else if(chr isAlpha()) {
+                    } else if(chr alpha?()) {
                         /* a name follows! */
                         splitted add(current toString())
                         current = Buffer new()
@@ -86,9 +86,9 @@ Version: cover from String extends String {
                     }
                 }
                 case NAME => {
-                    if(chr isAlpha()) {
+                    if(chr alpha?()) {
                         current append(chr)
-                    } else if(chr isDigit()) {
+                    } else if(chr digit?()) {
                         /* a digit follows! */
                         splitted add(current toString())
                         current = Buffer new()
@@ -131,7 +131,7 @@ Version: cover from String extends String {
              *  - `other`'s next part is "alpha", "beta", "a", "b" or "dev".
              * otherwise, `this` is smaller.
              */
-            if(i == thisParts size() && i < otherParts size()) {
+            if(i == thisParts size && i < otherParts size) {
                 match(otherParts[i]) {
                     case "a" => return true
                     case "b" => return true
@@ -141,7 +141,7 @@ Version: cover from String extends String {
                     case => return false
                 }
             }
-            else if(i == otherParts size() && i < thisParts size()) {
+            else if(i == otherParts size && i < thisParts size) {
                 match(thisParts[i]) {
                     case "a" => return false 
                     case "b" => return false
@@ -151,27 +151,27 @@ Version: cover from String extends String {
                     case => return true
                 }
             }
-            else if(i == otherParts size() && i == thisParts size()) {
+            else if(i == otherParts size && i == thisParts size) {
                 break
             }
             else {
                 thisPart = thisParts get(i)
                 otherPart = otherParts get(i)
                 /* is `this` alpha and `other` numeric? then, `other` is greater. */ /* TODO: too easy? */
-                if (_isAlpha(thisPart) && !_isAlpha(otherPart)) {
+                if (_alpha?(thisPart) && !_alpha?(otherPart)) {
                     return false
                 }
                 /* vice-versa. */
-                else if (!_isAlpha(thisPart) && _isAlpha(otherPart)) {
+                else if (!_alpha?(thisPart) && _alpha?(otherPart)) {
                     return true
                 }
                 /* are both alpha? */
-                else if(_isAlpha(thisPart) && _isAlpha(otherPart)) {
+                else if(_alpha?(thisPart) && _alpha?(otherPart)) {
                     for(rank: String in ALPHA_RANKS) {
-                        if(rank equals(thisPart)) {
+                        if(rank equals?(thisPart)) {
                             /* this matches before other, this is smaller. */
                             return false
-                        } else if(rank equals(otherPart)) {
+                        } else if(rank equals?(otherPart)) {
                             /* other matches before this, this is greater. */
                             return true
                         }

@@ -1,16 +1,14 @@
-use yajl
-import yajl/Yajl
-
 use curl
 import curl/Highlevel
 
-import structs/[ArrayList, HashMap]
+import text/json
+import structs/[ArrayList, HashMap, HashBag]
  
 import reincarnate/[App, Checksums, Net, Usefile, Variant, Version]
  
 APIException: class extends Exception {
-    init: func ~withMsg (.msg) {
-        super(msg)
+    init: func ~withMsg (.message) {
+        super(message)
     }
 }
  
@@ -41,39 +39,37 @@ Nirvana: class {
 
     _downloadUrl: func ~noPost (path: String) -> String { _downloadUrl(path, null) }
  
-    _interpreteUrl: func (path: String, post: HashMap<String, String>) -> ValueMap {
+    _interpreteUrl: func (path: String, post: HashMap<String, String>) -> HashBag {
         content := _downloadUrl(path, post)
-        parser := SimpleParser new()
-        parser parseAll(content)
-        value := parser getValue(ValueMap) as ValueMap /* TODO: what if we don't get a ValueMap? */
+        value := JSON parse(content)
         // did we get an error?
         s := value get("__result", String)
-        if(s equals("error")) {
+        if(s equals?("error")) {
             APIException new(This, "Error when reading `%s`: %s" format(path, value get("__text", String))) throw()
         }
         value remove("__result")
         value
     }
-    _interpreteUrl: func ~noPost (path: String) -> ValueMap { _interpreteUrl(path, null) }
+    _interpreteUrl: func ~noPost (path: String) -> HashBag { _interpreteUrl(path, null) }
  
     getCategories: func -> ArrayList<String> {
         map := _interpreteUrl("/categories/")
-        return map keys
+        return map getKeys()
     }
  
     getPackages: func (category: String) -> ArrayList<String> {
         map := _interpreteUrl("/category/%s/" format(category))
-        return map keys
+        return map getKeys()
     }
  
     getVersions: func (package: String) -> ArrayList<Version> {
         map := _interpreteUrl("/packages/%s/" format(package))
-        return map keys as ArrayList<Version>
+        return map getKeys() as ArrayList<Version>
     }
 
     getVariants: func (package, ver: String) -> ArrayList<Variant> {
         map := _interpreteUrl("/packages/%s/%s/" format(package, ver))
-        return map keys as ArrayList<Variant>
+        return map getKeys() as ArrayList<Variant>
     }
  
     getUsefilePath: func (package, ver, variant: String) -> String {

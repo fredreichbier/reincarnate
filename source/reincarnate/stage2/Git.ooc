@@ -17,7 +17,7 @@ GitPackage: class extends Package {
         /* so, `Origin` is the address of the git repository. `git clone` it to `oocLibsDir path / getLibDirName()`. */
         /* TODO: check if we're overwriting something. */
         dest := oocLibsDir getChild(getLibDirName())
-        if(dest exists()) {
+        if(dest exists?()) {
             logger error("'%s' already exists. Should not happen." format(dest path))
         }
         Process new(["git", "clone", usefile get("Origin"), dest path] as ArrayList<String>) execute()

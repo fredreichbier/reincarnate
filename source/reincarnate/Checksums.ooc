@@ -14,7 +14,7 @@ Checksums: class extends Usefile {
 
     check: func (fname: String) -> Bool {
         /* TODO: check if empty */
-        for(key: String in this keys) {
+        for(key: String in this getKeys()) {
             match(key) {
                 case "SHA-512" => {
                     if(this get(key) != FileSystem getSha512(fname)) {

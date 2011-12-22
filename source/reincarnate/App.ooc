@@ -66,22 +66,22 @@ App: class {
         /* does `location` contain a version? */
         ver := null as Version
         variant := null as Variant
-        if(location contains('/')) {
+        if(location contains?('/')) {
             variant = Variant fromLocation(location)
             location = location substring(0, location lastIndexOf('/'))
         } else {
             variant = config get("Nirvana.DefaultVariant", String) as Variant
         }
-        if(location contains('=')) {
+        if(location contains?('=')) {
             ver = Version fromLocation(location)
             location = location substring(0, location indexOf('='))
         }
         nickname := "nirvana"
         /* i KNOW it's dirty! */
-        if(location contains("://")) {
+        if(location contains?("://")) {
             /* remote stage 1 */
             nickname = "url"
-        } else if(location contains(".use")) {
+        } else if(location contains?(".use")) {
             /* local stage 1 */
             nickname = "local"
         }
@@ -141,8 +141,8 @@ App: class {
         for(child in yard yardPath getChildren()) {
             name := child name()
             
-            if (name endsWith(".use"))
-              list add(name[0..-5] split('-') toArrayList())
+            if (name endsWith?(".use"))
+              list add(name[0..-5] split('-'))
         }
         list
     }
@@ -176,7 +176,7 @@ App: class {
             reqs parseString(package usefile get("Requires"))
             logger debug("Resolving dependencies ...")
             for(loc: String in reqs getDependencyLocations()) {
-                if (yard _getYardPath(loc) exists()) {
+                if (yard _getYardPath(loc) exists?()) {
                     logger info("Updating %s as dependency." format(loc))
                     this update(loc)
                 } else {
@@ -258,7 +258,7 @@ App: class {
     }
 
     submit: func ~withUsefile (slug: String, usefile: Usefile, archiveFile: String) {
-        /* TODO: check if archiveFile exists. */
+        /* TODO: check if archiveFile exists?. */
         checksums := null as Checksums
         if(archiveFile != null)
             checksums = createChecksums(archiveFile)

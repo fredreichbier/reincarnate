@@ -1,5 +1,5 @@
 import structs/ArrayList
-import text/[Buffer, StringTokenizer]
+import text/StringTokenizer
 
 import deadlogger/Log
 
@@ -41,8 +41,8 @@ Requirement: class {
     }
 
     fromString: func (s: String) {
-        if(s contains('=') || s contains('>') || s contains('<')) {
-            /* contains a version. */
+        if(s contains?('=') || s contains?('>') || s contains?('<')) {
+            /* contains? a version. */
             SLUG := 1
             OP := 2
             VER := 3
@@ -82,7 +82,7 @@ Requirement: class {
             }
             this ver = buffer toString() trim()
         } else {
-            /* contains no version. */
+            /* contains? no version. */
             this slug = s trim()
         }
     }
@@ -118,13 +118,13 @@ Requirements: class extends ArrayList<Requirement> {
                 loc = requirement slug
             add := true
             for(lloc: String in locations) {
-                if(lloc equals(loc)) {
+                if(lloc equals?(loc)) {
                     add = false
                     break
                 }
             }
             if(add)
-                locations add(loc as Requirement)
+                locations add(loc)
         }
         return locations
     }

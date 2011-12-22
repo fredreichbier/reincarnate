@@ -41,7 +41,7 @@ FileSystem: class {
         temp := File new(app config get("Paths.Temp", String))
         baseBaseName := baseName
         i := 1
-        while(temp getChild(baseName + ext2) exists()) {
+        while(temp getChild(baseName + ext2) exists?()) {
             baseName = "%s%d" format(baseBaseName, i)
             i += 1
         }
@@ -52,7 +52,7 @@ FileSystem: class {
         temp := File new(app config get("Paths.Temp", String))
         i := 1
         base := name
-        while(temp getChild(name) exists()) {
+        while(temp getChild(name) exists?()) {
             name = "%s.%d" format(base, i)
             i += 1
         }
@@ -95,7 +95,7 @@ FileSystem: class {
             return ["tar", "-xvf", filename, "--use-compress-program", "xz", "-C", dest] as ArrayList<String>
         
         Exception new("Unknown archive format: %s" format(filename)) throw()
-        return null
+        ArrayList<String> new() // won't get here anyway
     }
 
     /** extract an archive archive (package) to the directory `directory`, but check for evil stuff before.
@@ -114,16 +114,16 @@ FileSystem: class {
         output := _getContentsList(filename, ext1, ext2)
         dir := null as String
         for(line: String in output split('\n')) {
-            if(line isEmpty()) {
+            if(line empty?()) {
                 continue
             }
-            if(dir == null && line contains(File separator)) {
+            if(dir == null && line contains?(File separator)) {
                 dir = line substring(0, line indexOf(File separator))
             }
             line println()
-            if(!line contains(File separator) \
-                || !line startsWith(dir) \
-                || line startsWith('/')) {
+            if(!line contains?(File separator) \
+                || !line startsWith?(dir) \
+                || line startsWith?('/')) {
                 Exception new(This, "Malformed package archive. '%s' shouldn't be there." format(line)) throw()
             }
         }

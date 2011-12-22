@@ -1,6 +1,6 @@
 import io/File
 import structs/ArrayList
-import text/Shlex
+import text/[Shlex, StringTokenizer]
 import os/Process
 
 import deadlogger/Log
@@ -47,9 +47,9 @@ Package: abstract class {
     }
 
     check: func (fname: String) {
-        if(usefile contains("_ChecksumsURL")) {
+        if(usefile contains?("_ChecksumsURL")) {
             checksumsText := app net downloadString(usefile get("_ChecksumsURL"))
-            if(!checksumsText trim() isEmpty()) {
+            if(!checksumsText trim() empty?()) {
                 checksumsSig := app fileSystem getTempFilename("sig")
                 app net downloadFile(usefile get("_ChecksumsSignatureURL"), checksumsSig) /* TODO: "sig"? */
                 if(!app gpg verify(checksumsText, File new(checksumsSig)))
@@ -70,7 +70,7 @@ Package: abstract class {
 
     getBinaryNames: func -> ArrayList<String> {
         result := ArrayList<String> new()
-        if(usefile contains("Binaries")) {
+        if(usefile contains?("Binaries")) {
             for(binary: String in usefile get("Binaries") split(',')) {
                 result add(binary trim())
             }
@@ -82,16 +82,16 @@ Package: abstract class {
     copyBinaries: func {
         libDir := guessLibDir()
         binDir := app config get("Paths.Binaries", File)
-        if(!binDir exists())
+        if(!binDir exists?())
             binDir mkdirs()
         for(name: String in getBinaryNames()) {
             srcChild := libDir getChild(name)
-            if(!srcChild exists()) {
-                logger critical("Binary file does not exist: %s" format(srcChild path))
+            if(!srcChild exists?()) {
+                logger critical("Binary file does not exists?: %s" format(srcChild path))
             } else {
                 destChild := binDir getChild(name)
-                if(destChild exists()) {
-                    logger critical("Binary file destination already exists: %s" format(destChild path))
+                if(destChild exists?()) {
+                    logger critical("Binary file destination already exists?: %s" format(destChild path))
                 } else {
                     logger info("Installing %s to %s" format(srcChild path, destChild path))
                     srcChild copyTo(destChild)
@@ -104,8 +104,8 @@ Package: abstract class {
         binDir := app config get("Paths.Binaries", File)
         for(name: String in getBinaryNames()) {
             child := binDir getChild(name)
-            if(!child exists()) {
-                logger critical("Binary file does not exist: %s" format(child path))
+            if(!child exists?()) {
+                logger critical("Binary file does not exists?: %s" format(child path))
             } else {
                 logger info("Removing %s" format(child path))
                 child remove()
@@ -115,7 +115,7 @@ Package: abstract class {
 
     /** If the usefile has a "Build" entry, ask the user if he'd like to invoke it. */
     build: func {
-        hasBuild := usefile contains("Build")
+        hasBuild := usefile contains?("Build")
         if(hasBuild) {
             cmd := usefile get("Build")
             /* ask the user. */
