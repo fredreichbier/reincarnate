@@ -101,7 +101,7 @@ Requirements: class extends ArrayList<Requirement> {
     getDependencyLocations: func -> ArrayList<String> {
         locations := ArrayList<String> new()
         for(requirement: Requirement in this) {
-            ver := null 
+            ver := null as String 
             if(requirement op != null) {
                 /* only if there is a comparison requirement given ... */
                 ver = app yard findVersion(requirement)

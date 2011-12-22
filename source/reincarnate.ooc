@@ -48,7 +48,7 @@ main: func (args: ArrayList<String>) -> Int {
         case "keep" => app keep(name)
         case "unkeep" => app unkeep(name)
         case "submit" => {
-            archive := null
+            archive := null as String
             if(xargs size > 3)
                 archive = xargs[3]
             app submit(name, archive)

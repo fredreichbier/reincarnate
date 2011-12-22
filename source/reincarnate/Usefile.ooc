@@ -44,16 +44,7 @@ Usefile: class extends HashMap<String, String> {
  
     /* TODO: implement that nicer */
     readUsefile: func ~fromReader (reader: Reader) {
-        BUFFER_SIZE := const 10
-        tinyBuffer := Buffer new(BUFFER_SIZE)
-        buffer := Buffer new()
-        while(true) {
-            bytesRead := reader read(tinyBuffer)
-            if(bytesRead < BUFFER_SIZE) {
-                break
-            }
-        }
-        readUsefile(buffer toString())
+        readUsefile(reader readAll())
     }
 
     dump: func -> String {

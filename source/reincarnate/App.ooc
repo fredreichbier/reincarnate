@@ -64,7 +64,7 @@ App: class {
     /** try to get the usefile described by `location` somehow. */
     doStage1: func (location: String) -> Usefile {
         /* does `location` contain a version? */
-        ver := null 
+        ver := null as String 
         variant: String
         if(location contains?('/')) {
             variant = Variant fromLocation(location)

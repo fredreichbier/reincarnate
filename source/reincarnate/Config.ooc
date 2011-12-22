@@ -81,8 +81,8 @@ Config: class {
         _mirrors add("http://meatshop.ooc-lang.org/meat/")
         _exts: ExtList = ExtList new()
         _exts add("tar.xz") .add("tar.gz") .add("tar.bz2")
-        defaults addValue("Nirvana.APITemplate", "http://nirvana.ooc-lang.org/api%s") \
-                .addValue("Nirvana.UsefileTemplate", "http://nirvana.ooc-lang.org%s") \
+        defaults addValue("Nirvana.APITemplate", "http://127.0.0.1:8000/api%s") \
+                .addValue("Nirvana.UsefileTemplate", "http://127.0.0.1:8000%s") \
                 .addValue("Nirvana.User", "") \
                 .addValue("Nirvana.Token", "") \
                 .addValue("Nirvana.DefaultVariant", "src") \

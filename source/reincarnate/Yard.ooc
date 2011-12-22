@@ -28,8 +28,8 @@ Yard: class {
     }
 
     _getYardPath: func ~latest (slug: String) -> File {
-        ver := null 
-        variant := null 
+        ver := null as String 
+        variant := null as String
         if(slug contains?('/')) {
             variant = Variant fromLocation(slug)
             slug = slug substring(0, slug lastIndexOf('/'))
@@ -80,10 +80,11 @@ Yard: class {
     }
 
     getLatestVersionOf: static func (versions: ArrayList<String>) -> String {
-        latest := null 
+        latest := null as String
         for(ver: String in versions) {
-            if(latest == null || Version isGreater(ver, latest))
+            if(latest == null || Version isGreater(ver, latest)) {
                 latest = ver
+            }
         }
         return latest
     }

@@ -73,7 +73,7 @@ FileSystem: class {
 
     _getContentsList: func (filename, ext1, ext2: String) -> String {
         output: String
-        line := null
+        line: ArrayList<String>
         if(ext2 == ".tar.gz" || ext2 == ".tar.bz2") {
             line = ["tar", "-tf", filename] as ArrayList<String>
         } else if(ext2 == ".tar.xz") {
