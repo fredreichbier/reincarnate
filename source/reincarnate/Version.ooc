@@ -24,12 +24,8 @@ _alpha?: func (s: String) -> Bool {
 ALPHA_RANKS := ArrayList<String> new()
 ALPHA_RANKS add("a") .add("alpha") .add("b") .add("beta") .add("dev")
 
-Version: class extends String {
-    init: func ~fromString (s: String) {
-        _buffer = s clone() _buffer // we're evil like that
-    }
-
-    fromLocation: static func (location: String) -> This {
+Version: class {
+    fromLocation: static func (location: String) -> String {
         if(location contains?('=')) {
             /* contains? a version */
             splitted := location split('=', 1)
@@ -38,10 +34,10 @@ Version: class extends String {
             if(ver == null) {
                 VersionParsingError new(This, "Invalid location: '%s'" format(location)) throw()
             }
-            return Version new(ver)
+            return ver
         } else {
             /* no version. return null. */
-            return null as This
+            return null
         }
     }
 
@@ -49,7 +45,7 @@ Version: class extends String {
       * @return a splitted version. Every element is either a number (as string) or a name (as string).
       *         Example: "0.1-3beta" -> ["0", "1", "3", "beta"]
       */
-    _splitVersion: func -> ArrayList<String> {
+    _splitVersion: static func (this: String) -> ArrayList<String> {
         DUNNO := const 0
         NUMBER := const 1
         NAME := const 2
@@ -57,7 +53,7 @@ Version: class extends String {
         current := Buffer new()
 
         state := DUNNO
-        for(i: SizeT in 0..length()) {
+        for(i: SizeT in 0..this length()) {
             chr := this[i]
             match state {
                 case DUNNO => {
@@ -111,7 +107,7 @@ Version: class extends String {
     /**
       * @return true if `this` is greater than `other`.
       */
-    isGreater: func (other: This) -> Bool {
+    isGreater: static func (this: String, other: String) -> Bool {
         /* `head` beats everything, except `head`. */
         if(this == "head")
             return !(other == "head")
@@ -121,8 +117,8 @@ Version: class extends String {
             "456" > "123"
             "0.1-123b" > "0.1-123a"
         */
-        thisParts := toLower() as Version _splitVersion()
-        otherParts := other toLower() as Version _splitVersion()
+        thisParts := _splitVersion(this toLower())
+        otherParts := _splitVersion(other toLower())
         thisPart := null as String
         otherPart := null as String
         i := 0
@@ -206,9 +202,9 @@ Version: class extends String {
     /*
      * @return -1 if other is greater, 0 if equal, 1 if this is greater.
      */
-    compareVersions: func (other: This) -> Int {
-        thisGreater := this isGreater(other)
-        otherGreater := other isGreater(this)
+    compareVersions: static func (this, other: String) -> Int {
+        thisGreater := Version isGreater(this, other)
+        otherGreater := Version isGreater(other, this)
         if(thisGreater && otherGreater) {
             Exception new(This, "WTF? Both greater? NNNNOOOOOOOO!") throw()
         } else if(thisGreater && !otherGreater) {

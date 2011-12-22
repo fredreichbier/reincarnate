@@ -17,10 +17,10 @@ Yard: class {
     }
 
     _getYardPath: func ~usefile (usefile: Usefile) -> File {
-        return _getYardPath~slug(usefile get("_Slug"), usefile get("Version") as Version, usefile get("Variant") as Variant)
+        return _getYardPath~slug(usefile get("_Slug"), usefile get("Version") , usefile get("Variant") )
     }
 
-    _getYardPath: func ~slug (slug: String, ver: Version, variant: Variant) -> File {
+    _getYardPath: func ~slug (slug: String, ver, variant: String) -> File {
         if (!variant)
             variant = app config get("Nirvana.DefaultVariant", String)
         
@@ -28,8 +28,8 @@ Yard: class {
     }
 
     _getYardPath: func ~latest (slug: String) -> File {
-        ver := null as Version
-        variant := null as Variant
+        ver := null 
+        variant := null 
         if(slug contains?('/')) {
             variant = Variant fromLocation(slug)
             slug = slug substring(0, slug lastIndexOf('/'))
@@ -45,44 +45,44 @@ Yard: class {
         return _getYardPath(slug, ver, variant)
     }
 
-    getInstalledVersions: func (slug: String) -> ArrayList<Version> {
+    getInstalledVersions: func (slug: String) -> ArrayList<String> {
         versions := ArrayList<String> new()
         slugLength := slug length()
         for(child: File in yardPath getChildren()) {
             if(child name() startsWith?(slug + "-")) {
                 name := child name()
                 lastHyphen := name lastIndexOf('-')
-                versions add(name substring(slugLength + 1, lastHyphen) as Version) /* - ".use" - variant */
+                versions add(name substring(slugLength + 1, lastHyphen) ) /* - ".use" - variant */
             }
         }
         return versions
     }
 
-    getInstalledVariants: func (slug: String, ver: Version) -> ArrayList<Variant> {
+    getInstalledVariants: func (slug, ver: String) -> ArrayList<Variant> {
         variants := ArrayList<String> new()
         start := "%s-%s-" format(slug, ver)
         startLength := start length()
         for(child: File in yardPath getChildren()) {
             if(child name() startsWith?(start)) {
                 name := child name()
-                variants add(name substring(startLength, name length() - 4) as Variant) /* - ".use" */
+                variants add(name substring(startLength, name length() - 4) ) /* - ".use" */
             }
         }
         return variants
     }
 
-    getLatestInstalledVersion: func (slug: String) -> Version {
+    getLatestInstalledVersion: func (slug: String) -> String {
         getLatestVersionOf(getInstalledVersions(slug))
     }
 
-    getAnyVariant: func (slug: String, ver: Version) -> Variant {
+    getAnyVariant: func (slug, ver: String) -> Variant {
         return getInstalledVariants(slug, ver) get(0) /* TODO: get the default variant first? */
     }
 
-    getLatestVersionOf: static func (versions: ArrayList<Version>) -> Version {
-        latest := null as Version
-        for(ver: Version in versions) {
-            if(latest == null || ver isGreater(latest))
+    getLatestVersionOf: static func (versions: ArrayList<String>) -> String {
+        latest := null 
+        for(ver: String in versions) {
+            if(latest == null || Version isGreater(ver, latest))
                 latest = ver
         }
         return latest
@@ -91,18 +91,18 @@ Yard: class {
     /** find a version of `requirement slug` (in the "nirvana" stage1.) that 
       * meets `requirement` and return the greatest. If there is none, return null. 
       */
-    findVersion: func (requirement: Requirement) -> Version {
+    findVersion: func (requirement: Requirement) -> String {
         versions := app nirvana getVersions(requirement slug)
-        meeting := ArrayList<Version> new()
+        meeting := ArrayList<String> new()
         if(versions != null) {
-            for(ver: Version in versions) {
+            for(ver: String in versions) {
                 if(requirement meets(ver)) {
                     meeting add(ver)
                 }
             }
             return getLatestVersionOf(meeting)
         }
-        return null as Version
+        return null 
     }
 
     /** return a list of installed packages. **/

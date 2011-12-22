@@ -62,9 +62,9 @@ Nirvana: class {
         return map getKeys()
     }
  
-    getVersions: func (package: String) -> ArrayList<Version> {
+    getVersions: func (package: String) -> ArrayList<String> {
         map := _interpreteUrl("/packages/%s/" format(package))
-        return map getKeys() as ArrayList<Version>
+        return map getKeys() as ArrayList<String>
     }
 
     getVariants: func (package, ver: String) -> ArrayList<Variant> {

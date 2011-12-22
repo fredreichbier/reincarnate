@@ -13,9 +13,9 @@ Stage1: abstract class {
     /* compare the versions! */
     hasUpdates: func (location: String, oldUsefile: Usefile) -> Bool {
         newUsefile := getUsefile(location, null, oldUsefile get("Variant"))
-        oldVersion := oldUsefile get("Version") as Version
-        newVersion := newUsefile get("Version") as Version
+        oldVersion := oldUsefile get("Version") 
+        newVersion := newUsefile get("Version") 
         /* (this also handles `head`.) */
-        return newVersion isGreater(oldVersion)
+        return Version isGreater(newVersion, oldVersion)
     }
 }

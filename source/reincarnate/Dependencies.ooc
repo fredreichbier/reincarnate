@@ -8,8 +8,7 @@ import reincarnate/[App, Package, Version]
 logger := Log getLogger("reincarnate.Dependencies")
 
 Requirement: class {
-    slug, op: String
-    ver: Version
+    slug, op, ver: String
 
     init: func ~all (=slug, =op, =ver) {}
     init: func ~noOp (=slug) {
@@ -18,11 +17,11 @@ Requirement: class {
     }
 
     /** does `pVer` meet the requirement? */
-    meets: func (pVer: Version) -> Bool {
+    meets: func (pVer: String) -> Bool {
         if(op == null)
             /* no version given, so any version matches. */
             return true
-        cmp := ver compareVersions(pVer)
+        cmp := Version compareVersions(ver, pVer)
         return match op {
             case "=" => cmp == 0
             case "<" => cmp == 1
@@ -102,7 +101,7 @@ Requirements: class extends ArrayList<Requirement> {
     getDependencyLocations: func -> ArrayList<String> {
         locations := ArrayList<String> new()
         for(requirement: Requirement in this) {
-            ver := null as Version
+            ver := null 
             if(requirement op != null) {
                 /* only if there is a comparison requirement given ... */
                 ver = app yard findVersion(requirement)

@@ -64,19 +64,20 @@ App: class {
     /** try to get the usefile described by `location` somehow. */
     doStage1: func (location: String) -> Usefile {
         /* does `location` contain a version? */
-        ver := null as Version
-        variant := null as Variant
+        ver := null 
+        variant: String
         if(location contains?('/')) {
             variant = Variant fromLocation(location)
             location = location substring(0, location lastIndexOf('/'))
         } else {
-            variant = config get("Nirvana.DefaultVariant", String) as Variant
+            variant = config get("Nirvana.DefaultVariant", String)
         }
         if(location contains?('=')) {
             ver = Version fromLocation(location)
             location = location substring(0, location indexOf('='))
         }
         nickname := "nirvana"
+        "Doing stage 1 nickname '%s' on '%s', version '%s', variant '%s'." printfln(nickname, location, ver, variant)
         /* i KNOW it's dirty! */
         if(location contains?("://")) {
             /* remote stage 1 */
@@ -85,6 +86,7 @@ App: class {
             /* local stage 1 */
             nickname = "local"
         }
+        "Doing stage 1 nickname '%s' on '%s', version '%s', variant '%s'." printfln(nickname, location, ver, variant)
         logger debug("Doing stage 1 nickname '%s' on '%s', version '%s', variant '%s'." format(nickname, location, ver, variant))
         usefile := stages1[nickname] getUsefile(location, ver, variant)
         usefile put("_Stage1", nickname) .put("_Location", location)
