@@ -1,7 +1,7 @@
 import reincarnate/Version
 
 compare: func (a, b: String) {
-    result := a  compareVersions(b )
+    result := Version compareVersions(a, b)
     sign := match result {
         case -1 => "<"
         case 0 => "="
