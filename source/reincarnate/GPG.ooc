@@ -35,7 +35,7 @@ GPG: class {
 
     verify: func (signature: String, file: File) -> Bool {
         args := commonArgs clone()
-        args add("--verify") .add(file path) .add("-")
+        args add("--verify") .add(file getPath()) .add("-")
         proc := Process new(args)
         proc setStdin(Pipe new()) 
         proc executeNoWait()

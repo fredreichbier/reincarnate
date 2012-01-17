@@ -71,7 +71,6 @@ Mirrors: class {
     init: func (=app) {}
 
     download: func (package, ver, variant: String) -> String { // TODO TODO TODO TODO TODO
-    /*
         mirrorList := app config get("Meatshop.Mirrors", MirrorList)
         scheme := app config get("Meatshop.RelativeFilenameScheme", String)
         map := HashMap<String, String> new()
@@ -97,8 +96,7 @@ Mirrors: class {
             }
         }
         Exception new(This, "Couldn't download %s=%s/%s from the meatshop." format(package, ver, variant)) throw()
-        null*/
-        ""
+        null
     }
 
     /** submit the package to the super mirror. */
@@ -124,6 +122,7 @@ Mirrors: class {
             .put("ext", ext) \
             .put("user", user) \
             .put("token", token)
+        for(k: String in post getKeys()) { "%s => %s" printfln(k, post[k]) }
         formData := FormData new(post)
         formData addFieldFile("archive", archiveFile path)
         /* finally, do the request. */

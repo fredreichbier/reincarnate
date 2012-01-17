@@ -78,16 +78,16 @@ Config: class {
         /* create defaults. */
         defaults := FixedEntity new(null)
         _mirrors: MirrorList = MirrorList new()
-        _mirrors add("http://meatshop.ooc-lang.org/meat/")
+        _mirrors add("http://meatshop.reichbier.de/")
         _exts: ExtList = ExtList new()
         _exts add("tar.xz") .add("tar.gz") .add("tar.bz2")
-        defaults addValue("Nirvana.APITemplate", "http://127.0.0.1:8000/api%s") \
-                .addValue("Nirvana.UsefileTemplate", "http://127.0.0.1:8000%s") \
+        defaults addValue("Nirvana.APITemplate", "http://nirvana.reichbier.de/api%s") \
+                .addValue("Nirvana.UsefileTemplate", "http://nirvana.reichbier.de%s") \
                 .addValue("Nirvana.User", "") \
                 .addValue("Nirvana.Token", "") \
                 .addValue("Nirvana.DefaultVariant", "src") \
                 .addValue("Meatshop.Mirrors", _mirrors) \
-                .addValue("Meatshop.SuperMirror", "http://meatshop.ooc-lang.org") \
+                .addValue("Meatshop.SuperMirror", "http://meatshop.reichbier.de") \
                 .addValue("Meatshop.RelativeFilenameScheme", "/{{ package }}/{{ version }}/{{ variant }}/{{ package }}-{{ version }}-{{ variant }}.{{ type }}") \
                 .addValue("Meatshop.SuperMirrorSubmit", "%s/submit") \
                 .addValue("Meatshop.FileTypes", _exts) \

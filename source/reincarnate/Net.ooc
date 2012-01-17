@@ -21,7 +21,7 @@ Net: class {
     downloadString: static func (url: String) -> String {
         request := HTTPRequest new(url)
         _performRequest(request)
-        request getString()
+         request getString()
     }
 
     _performRequest: static func (request: HTTPRequest) {

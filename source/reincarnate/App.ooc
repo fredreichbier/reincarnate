@@ -264,7 +264,7 @@ App: class {
         checksums := null as Checksums
         if(archiveFile != null)
             checksums = createChecksums(archiveFile)
-        nirvana submitUsefile(slug, "" /* TODO */, usefile, checksums)
+        nirvana submitUsefile(slug, "src" /* TODO */, usefile, checksums)
         /* do we have an archive? if yes, submit it, too */
         if(archiveFile != null)
             mirrors submitPackage(slug, usefile get("Version"), usefile get("Variant"), archiveFile)
